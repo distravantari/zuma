@@ -57,3 +57,12 @@ Shape hierarchy: pills for actions and chips, 20px radius for content cards, 12p
 ## Add-on tags
 
 Features outside the core brief carry a dashed gold **Add-on** tag so the client can see what each pricing tier includes. Toggle them with "Show add-on tags" in the desktop side panel.
+
+## Zuma Assistant (admin)
+
+Modelled on the agent in Hostinger's hPanel: a "What do you need today?" prompt bar on the Today page, an **Ask Zuma** button in the admin menu and in the corner of every admin page, a right-hand chat drawer, and a full page at `#/admin/assistant`.
+
+- It answers from the app itself: every admin and player-app menu, plus live data such as prices, peak hours, pending bookings, open hours, events, promos, coaches and merch. It understands common Indonesian words (pengaturan, harga, jam ramai, pemesanan).
+- Every answer links straight to the right page.
+- When it can't match a question, it says it isn't a full agent yet and offers a WhatsApp link to Distra to hire one.
+- It is rule-based (`assets/js/assistant.js`), with no AI service behind it. The answers are predictable and free to run, and a real AI agent can replace it later behind the same chat UI.

@@ -52,6 +52,9 @@
     user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
     heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
     close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+    expand: '<path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/>',
+    send: '<path d="M4 12l16-8-6 16-2.5-6.5z"/>',
     ig: '<rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="16.8" cy="7.2" r="0.6"/>',
   };
   const LOGO = "assets/brand/zuma-logo-white.png";
@@ -1245,6 +1248,7 @@
     orders: store.get("admin.orders", null) || Z.adminOrders.map((o) => ({ ...o })),
     save() { store.set("admin.bookings", this.bookings); store.set("admin.orders", this.orders); },
   };
+  const assistant = window.ZumaAssistant({ Z, P, admin, esc, icon, logo, rp, hhmm, fmtLong, fmtDate, openSlotsToday, isFeed });
 
   function adminShell(active, body) {
     const item = (k, href, t) => `<a class="item" href="${href}" ${active === k ? 'aria-current="page"' : ""}>${t}</a>`;
@@ -1258,10 +1262,61 @@
         ${item("orders", "#/admin/orders", "Merch orders")}
         ${item("contacts", "#/admin/contacts", "Contacts and export")}
         ${item("reports", "#/admin/reports", "Reports")}
+        ${item("settings", "#/admin/settings", "Settings")}
+        <button class="item ask-nav" type="button" data-action="ask-open">${icon("spark", 18)} Ask Zuma</button>
         <div class="foot"><a class="btn on-dark sm block" href="#/">Back to player app</a></div>
       </nav>
       <main class="admin-main">${body}</main>
     </div>`;
+  }
+
+  function viewSettings() {
+    const c = Z.club;
+    const field = (id, label, value, hint = "") => `<div class="field"><label for="${id}">${label}</label><input class="input" id="${id}" value="${esc(value)}">${hint ? `<span class="hint">${hint}</span>` : ""}</div>`;
+    const toggle = (id, label, on, hint) => `<label class="check" for="${id}"><input type="checkbox" id="${id}" ${on ? "checked" : ""}><span><b>${label}</b><br><span class="muted">${hint}</span></span></label>`;
+    return adminShell("settings", `
+      <div class="admin-head"><h1>Settings</h1><button class="btn sm" data-action="toast" data-msg="Settings saved">Save settings</button></div>
+      <div class="settings-grid">
+        <section class="card stack-12" id="set-club"><h2 class="set-h">Club profile</h2>
+          ${field("s-name", "Club name", c.name)}
+          ${field("s-addr", "Address", c.address)}
+          ${field("s-wa", "WhatsApp number", "+" + c.whatsapp, "Players chat with this number from every page.")}
+          ${field("s-email", "Email", c.email)}
+          ${field("s-ig", "Instagram", c.instagram)}
+        </section>
+        <section class="card stack-12" id="set-hours"><h2 class="set-h">Opening hours</h2>
+          ${c.hours.map((h, i) => field("s-h" + i, h.days, h.time)).join("")}
+          <p class="small muted">Court prices and peak hours are under <a href="#/admin/schedule">Courts and prices</a>.</p>
+        </section>
+        <section class="card stack-12" id="set-rules"><h2 class="set-h">Booking rules</h2>
+          ${field("s-cancel", "Free cancellation until", "24 hours before start")}
+          ${field("s-release", "Release a no-show after", "15 minutes")}
+          ${field("s-ahead", "Players can book ahead", "14 days")}
+          ${field("s-dur", "Durations offered", "60, 90 and 120 minutes")}
+        </section>
+        <section class="card stack-12" id="set-notify"><h2 class="set-h">Notifications</h2>
+          ${toggle("n-confirm", "WhatsApp booking confirmation", true, "Sent as soon as a player books.")}
+          ${toggle("n-remind", "WhatsApp reminder", true, "Sent 2 hours before the booking starts.")}
+          ${toggle("n-email", "Email confirmation", true, "When the player leaves an email.")}
+          ${toggle("n-staff", "Tell the front desk about new bookings", false, "A WhatsApp to the club number for every booking.")}
+        </section>
+        <section class="card stack-12" id="set-integrations"><h2 class="set-h">Integrations</h2>
+          ${field("s-ga", "Google Analytics ID", "G-XXXXXXXXXX")}
+          ${field("s-pixel", "Meta Pixel ID", "000000000000000")}
+          ${field("s-waapi", "WhatsApp Business API", "Connected (sample)")}
+          ${field("s-ayo", "AYO", "Manual: block AYO-sold slots under Courts and prices")}
+        </section>
+        <section class="card stack-12" id="set-staff"><h2 class="set-h">Staff and roles</h2>
+          <div class="table-wrap" style="border:0"><table class="table" style="min-width:0">
+            <thead><tr><th>Name</th><th>Role</th><th>Can do</th></tr></thead>
+            <tbody>
+              <tr><td><b>Owner</b></td><td>Admin</td><td>Everything, including prices and settings</td></tr>
+              <tr><td><b>Front desk</b></td><td>Staff</td><td>Bookings, merch orders, contacts</td></tr>
+              <tr><td><b>Coach coordinator</b></td><td>Editor</td><td>Academy, coaches, programs</td></tr>
+            </tbody></table></div>
+          <button class="btn ghost sm" data-action="toast" data-msg="Invite form opens here.">Invite staff</button>
+        </section>
+      </div>`);
   }
 
   function bookingTable(rows) {
@@ -1275,6 +1330,8 @@
   }
 
   function viewAdmin(sub, q) {
+    if (sub === "settings") return viewSettings();
+    if (sub === "assistant") return adminShell("assistant", `<div class="ask-page">${assistant.panel(true)}</div>`);
     if (sub === "bookings") {
       const f = q.status || "All";
       const rows = admin.bookings.filter((b) => f === "All" || b.status === f);
@@ -1366,6 +1423,11 @@
     const openHours = Z.courts.reduce((n, c) => n + openSlotsToday(c.id, 99).length, 0);
     return adminShell("home", `
       <div class="admin-head"><div><h1>Today</h1><p class="muted">${fmtLong(today)}</p></div><a class="btn sm" href="#/admin/bookings?status=Pending">Review pending</a></div>
+      <form class="ask-hero" data-form="ask-hero">
+        <p class="ask-hello">${greeting()}. What do you need today?</p>
+        <div class="ask-bar">${icon("spark", 20)}<label for="ask-hero-q" class="sr-only">Ask Zuma</label><input id="ask-hero-q" name="q" placeholder="Ask about menus, prices, bookings or settings" autocomplete="off"><button class="btn sm" type="submit">Ask</button></div>
+        <div class="chips">${assistant.suggestions.slice(0, 4).map((s) => `<button type="button" class="chip" data-action="ask" data-q="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+      </form>
       <div class="admin-tiles">
         <div class="card"><span class="small">Bookings to confirm</span><b>${pending}</b></div>
         <div class="card"><span class="small">Open court hours left today</span><b>${openHours}</b></div>
@@ -1477,6 +1539,7 @@
     root.innerHTML = isAdmin
       ? html
       : `<div class="stage">${presenter(key, false)}<div class="device"><div class="screen ${key === "feed" ? "feed-screen" : ""}">${html}</div></div></div>`;
+    assistant.mount();
     if (isAdmin) document.title = "Zuma admin";
     else document.title = "Zuma Padel Court";
 
@@ -1576,6 +1639,11 @@
       return rerender();
     }
     if (act === "export") return exportCsv(t.dataset.what);
+    if (act === "ask-open") return assistant.openDrawer();
+    if (act === "ask") return assistant.ask(t.dataset.q);
+    if (act === "ask-close") return assistant.close();
+    if (act === "ask-expand") return assistant.close();
+    if (act === "ask-link") return;
     if (act === "style") { store.set("style", t.dataset.style); closeStory(); location.hash === "#/" ? render() : (location.hash = "#/"); return; }
     if (act === "story") return showStory(t.dataset.id, 0);
     if (act === "story-next" || act === "story-prev") { const v = document.querySelector(".story-view"); return showStory(v.dataset.id, Number(v.dataset.idx) + (act === "story-next" ? 1 : -1)); }
@@ -1616,6 +1684,7 @@
       location.hash = "#/booking/" + c;
       return;
     }
+    if (kind === "ask" || kind === "ask-hero") { assistant.ask(data.q); f.reset(); return; }
     if (kind === "manage") { location.hash = "#/manage?code=" + encodeURIComponent((data.code || "").trim().toUpperCase()); return; }
     if (kind === "contact") {
       if (!data.name?.trim() || (data.wa || "").replace(/\D/g, "").length < 9) { toast("Add your name and a WhatsApp number"); return; }
@@ -1637,7 +1706,7 @@
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closeSheet(); closeStory(); }
+    if (e.key === "Escape") { closeSheet(); closeStory(); if (assistant.isOpen()) assistant.close(); }
     if (document.querySelector(".story-view") && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
       const v = document.querySelector(".story-view");
       showStory(v.dataset.id, Number(v.dataset.idx) + (e.key === "ArrowRight" ? 1 : -1));

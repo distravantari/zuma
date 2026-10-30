@@ -2,40 +2,56 @@
 // Every name, price and date here is placeholder data for the client demo.
 
 window.ZUMA = {
+  // Club facts from Instagram @zumapadelcourt and the AYO venue page (Oct 2026).
+  // Hours, prices and the WhatsApp number are still placeholders.
   club: {
-    name: "Zuma Padel Club",
-    tagline: "Padel, coaching and community under one roof.",
-    address: "Club address goes here",
-    mapsUrl: "https://maps.google.com/?q=padel",
+    name: "Zuma Padel Court",
+    tagline: "Redefining padel as a lifestyle of elegance, competition, and shared moments.",
+    group: "Jose Pratama Group",
+    address: "Jl. Pajajaran, Bantarjati, Kota Bogor, Jawa Barat",
+    mapsUrl: "https://maps.google.com/?q=Zuma+Padel+Court+Jl.+Pajajaran+Bantarjati+Bogor",
+    instagram: "https://www.instagram.com/zumapadelcourt/",
     whatsapp: "6281200000000",
-    email: "hello@zuma.example",
+    email: "pratamasportentertainment@email.com",
     hours: [
       { days: "Monday to Friday", time: "06:00 – 23:00" },
       { days: "Saturday and Sunday", time: "06:00 – 23:00" },
       { days: "Public holidays", time: "07:00 – 22:00" },
     ],
     facilities: [
-      "4 panoramic glass courts",
-      "Racket and ball rental",
-      "Showers and lockers",
+      "4 indoor full-panoramic courts",
+      "Premium synthetic turf",
+      "Café and resto",
+      "Hot showers",
+      "Snacks and drinks",
+      "Musholla",
+      "Car parking",
       "Pro shop and merch pickup",
-      "Café and lounge",
-      "Parking for 40 cars",
     ],
   },
 
   courts: [
     { id: "c1", name: "Court 1", kind: "Panoramic" },
     { id: "c2", name: "Court 2", kind: "Panoramic" },
-    { id: "c3", name: "Court 3", kind: "Standard" },
-    { id: "c4", name: "Court 4", kind: "Standard" },
+    { id: "c3", name: "Court 3", kind: "Panoramic" },
+    { id: "c4", name: "Court 4", kind: "Panoramic" },
   ],
 
-  // Prices per hour, in rupiah. Peak = weekday evenings and all weekend.
+  // Lines from the club's own Instagram captions, used as feed copy.
+  voice: [
+    "More than a game. More than a moment.",
+    "The pleasure of play, beyond the game.",
+    "Every point starts with a decision.",
+    "Good rallies, good food, good company.",
+    "What starts as a game becomes the best part of your day.",
+  ],
+
+  // Prices per hour, in rupiah. Sample rates in line with premium indoor
+  // venues in Bogor (Oct 2026). Peak = weekday evenings, weekend mornings and evenings.
   pricing: {
-    peak: 450000,
-    offPeak: 300000,
-    peakRule: "Weekdays from 16:00, weekends all day",
+    peak: 350000,
+    offPeak: 200000,
+    peakRule: "Weekdays from 17:00, weekends 07:00 to 11:00 and from 17:00",
     open: 6,
     close: 23,
     durations: [60, 90, 120],

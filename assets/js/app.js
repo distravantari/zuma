@@ -48,7 +48,14 @@
     clock: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
     search: '<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/>',
     download: '<path d="M12 4v11M8 11l4 4 4-4M5 19h14"/>',
+    bag: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
+    heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+    close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    ig: '<rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="16.8" cy="7.2" r="0.6"/>',
   };
+  const LOGO = "assets/brand/zuma-logo-white.png";
+  const logo = (h = 22, dark = false) => `<img class="logo ${dark ? "dark" : ""}" src="${LOGO}" alt="Zuma" style="height:${h}px">`;
   const icon = (name, size = 22) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[name]}</svg>`;
 
   const PRODUCT_ART = {
@@ -79,7 +86,7 @@
   const P = Z.pricing;
   const now = () => new Date();
   const isWeekend = (d) => d.getDay() === 0 || d.getDay() === 6;
-  const isPeak = (d, h) => (isWeekend(d) ? h >= 7 : h >= 16);
+  const isPeak = (d, h) => h >= 17 || (isWeekend(d) && h >= 7 && h < 11);
   const isPromo = (d, h) => !isWeekend(d) && h >= 10 && h < 15;
   const hash = (s) => {
     let h = 2166136261;
@@ -150,16 +157,26 @@
     promos: ["Promos", [["PM-01", "Promos with terms and validity"], ["PM-02", "Code carried into the booking form"]]],
     info: ["Info and help", [["SP-01", "FAQ and how to book"], ["SP-02", "Map, hours, facilities"], ["SP-03", "WhatsApp customer service"]]],
     more: ["Menu", [["", "Everything that doesn't fit in the four tabs"]]],
+    feed: ["Feed home", [["HM-01", "Stories carry promos and events"], ["HM-02", "Book button always in the middle of the tab bar"], ["Add-on", "Open-now court story and feed card"], ["HM-03", "Events, programs and coaches as swipeable cards"], ["MK-03", "Every card shares to WhatsApp"], ["", "Save cards to Me, like Instagram"]]],
+    explore: ["Explore", [["EV-01", "Events, programs, academy and shop in one grid"], ["SP-01", "Search across everything"]]],
+    me: ["Me", [["BK-05", "Your bookings on this phone, no account needed"], ["", "Saved cards"], ["", "Member registration, coming soon (from the club's Linktree)"]]],
+    mediakit: ["Media kit", [["Add-on", "Club profile, capacity, sponsor slots, event calendar"]]],
     admin: ["Admin panel", [["AD-01", "Courts, schedule, peak/off-peak prices"], ["AD-02", "View, confirm, cancel bookings"], ["AD-03", "Events, programs, academy, merch, promos, banners, sponsors"], ["AD-04", "View and export bookings, sign-ups, orders"], ["Add-on", "Quiet and busy hours, sponsor clicks"]]],
   };
 
   function presenter(key, isAdmin) {
     const [title, items] = NOTES[key] || NOTES.home;
     const hidden = document.body.classList.contains("hide-addons");
+    const feed = isFeed();
     return `
       <aside class="presenter" aria-label="About this mockup">
-        <h1>Zuma web app</h1>
-        <p class="lede">Clickable mockup for review. Everything works with sample data. Nothing is paid or sent.</p>
+        ${logo(30)}
+        <p class="lede" style="margin-top:14px">Web app mockup for Zuma Padel Court, Bogor. Everything is clickable with sample data. Nothing is paid or sent.</p>
+        <h2>Pick a player app style</h2>
+        <div class="style-cards" role="group" aria-label="Player app style">
+          <button type="button" data-action="style" data-style="club" aria-pressed="${!feed}"><b>Club</b><span>Calm, editorial, everything one tap from home</span></button>
+          <button type="button" data-action="style" data-style="feed" aria-pressed="${feed}"><b>Feed</b><span>Stories and a swipeable feed, like Instagram and TikTok</span></button>
+        </div>
         <div class="switch" role="group" aria-label="View">
           <a href="#/" class="${isAdmin ? "" : "active"}">Player app</a>
           <a href="#/admin" class="${isAdmin ? "active" : ""}">Admin panel</a>
@@ -175,14 +192,24 @@
 
   /* ---------- Chrome ---------- */
   function topbar(back) {
+    if (back === "#/more" && isFeed()) back = "#/explore";
     return `<header class="topbar">
-      ${back ? `<a class="back" href="${back}" data-action="back">${icon("back", 20)} Back</a>` : `<a class="wordmark" href="#/">Zuma</a>`}
+      ${back ? `<a class="back" href="${back}" data-action="back">${icon("back", 20)} Back</a>` : `<a href="#/" aria-label="Zuma home">${logo(22)}</a>`}
       <a class="icon-btn" href="${waLink("Hi Zuma, I have a question.")}" target="_blank" rel="noopener" aria-label="Chat with Zuma on WhatsApp">${icon("wa", 20)}</a>
     </header>`;
   }
 
   function tabbar(active) {
     const tab = (href, key, label, ic) => `<a href="${href}" ${active === key ? 'aria-current="page"' : ""}>${icon(ic)}<span>${label}</span></a>`;
+    if (isFeed()) {
+      const inShop = /^#\/(shop|pickup)/.test(location.hash);
+      const k = inShop ? "shop" : { events: "explore", more: "me" }[active] || active;
+      return `<nav class="tabbar five" aria-label="Main">
+        ${tab("#/", "home", "Home", "home")}${tab("#/explore", "explore", "Explore", "search")}
+        <a class="book-fab" href="#/book" ${k === "book" ? 'aria-current="page"' : ""}><span class="fab">${icon("court")}</span><span>Book</span></a>
+        ${tab("#/shop", "shop", "Shop", "bag")}${tab("#/me", "me", "Me", "user")}
+      </nav>`;
+    }
     return `<nav class="tabbar" aria-label="Main">${tab("#/", "home", "Home", "home")}${tab("#/book", "book", "Book", "court")}${tab("#/events", "events", "Events", "cal")}${tab("#/more", "more", "More", "more")}</nav>`;
   }
 
@@ -254,7 +281,7 @@
         <h2>Partners</h2>
         <div class="sponsors" style="margin-top:14px">
           ${Z.sponsors.map((s) => `<a class="sponsor" href="#/" data-action="sponsor" data-name="${esc(s.name)}">${esc(s.name)}<small>${esc(s.tier)}</small></a>`).join("")}
-          <a class="sponsor" href="${waLink("Hi Zuma, I'd like to talk about sponsorship.")}" target="_blank" rel="noopener" style="border-style:dashed">Your brand here<small>Talk to us</small></a>
+          <a class="sponsor" href="#/media-kit" style="border-style:dashed">Your brand here<small>See the media kit</small></a>
         </div>
       </section>
       ${tabbar("home")}`;
@@ -355,6 +382,22 @@
         </div>
       </section>
 
+      ${isFeed() ? `<section class="section">${Z.courts.map((c) => `
+        <div class="court-row">
+          <div class="h"><b>${c.name}</b><span class="small muted">${c.kind}, indoor</span></div>
+          <div class="times" role="group" aria-label="${c.name} start times">
+            ${hours.map((h) => {
+              const u = unit(c.id, st.date, h);
+              if (isPast(st.date, h) || u.state === "block") return "";
+              if (u.state === "taken") return `<button class="taken" data-action="waitlist" data-court="${c.id}" data-h="${h}" aria-label="${c.name} ${hhmm(h)} booked, join waitlist">${hhmm(h)}<small>Waitlist</small></button>`;
+              if (!canStart(c.id, st.date, h, st.dur)) return "";
+              const kind = isPromo(date, h) ? "promo" : isPeak(date, h) ? "peak" : "offpeak";
+              return `<button class="${kind === "promo" ? "promo" : ""}" data-action="pick" data-court="${c.id}" data-h="${h}" aria-pressed="${st.court === c.id && st.start === h}">${hhmm(h)}<small>${kind === "promo" ? "−20%" : kind === "peak" ? rp(P.peak / 1000) .replace("IDR ", "") + "k" : rp(P.offPeak / 1000).replace("IDR ", "") + "k"}</small></button>`;
+            }).join("") || '<span class="small muted">No open times left.</span>'}
+          </div>
+        </div>`).join("")}
+        <p class="small muted" style="margin-top:8px">Swipe each row for more times. Booked times let you join the waitlist. ${addon}</p>
+      </section>` : `
       <section class="section">
         <div class="grid-wrap">
           <table class="avail">
@@ -363,7 +406,7 @@
           </table>
         </div>
         <p class="small muted" style="margin-top:8px">Availability refreshes live. If two people pick the same slot, the first to confirm gets it.</p>
-      </section>
+      </section>`}
 
       <div class="summary-bar" aria-live="polite">
         ${valid
@@ -884,7 +927,7 @@
       ${topbar("#/more")}
       <section class="section"><h1 style="font-size:var(--t-3xl)">Visit and help</h1></section>
       <section class="section">
-        <div class="map" role="img" aria-label="Map showing the club"><span class="pin">Zuma Padel Club</span></div>
+        <div class="map" role="img" aria-label="Map showing the club"><span class="pin">Zuma Padel Court</span></div>
         <p style="margin-top:10px">${esc(Z.club.address)}</p>
         <a class="btn ghost block" style="margin-top:10px" href="${Z.club.mapsUrl}" target="_blank" rel="noopener">${icon("pin", 20)} Open in Google Maps</a>
       </section>
@@ -932,10 +975,12 @@
           ${item("#/promos", "Promos", "Codes to use when booking")}
           ${item("#/beginners", "New to padel", "Rules and your first visit", addon)}
           ${item("#/info", "Visit and help", "Map, hours, FAQ, WhatsApp")}
+          ${item("#/media-kit", "Partner with Zuma", "Media kit for sponsors", addon)}
         </nav>
       </section>
       <section class="section">
-        <a class="btn ghost block" href="#/admin">Open the admin panel (demo)</a>
+        <button class="btn block" data-action="style" data-style="feed">Try the Feed style</button>
+        <a class="btn ghost block" style="margin-top:10px" href="#/admin">Open the admin panel (demo)</a>
         <button class="btn ghost block" style="margin-top:10px" data-action="reset">Reset demo data</button>
       </section>
       ${tabbar("more")}`;
@@ -943,6 +988,254 @@
 
   function viewNotFound(msg) {
     return `${topbar("#/")}<section class="section stack-12"><h1 style="font-size:var(--t-3xl)">Not found</h1><p>${esc(msg)}</p><a class="btn" href="#/">Go to home</a></section>${tabbar("")}`;
+  }
+
+  /* ---------- Feed style (second player app) ---------- */
+  const isFeed = () => store.get("style", "club") === "feed";
+  const greeting = () => { const h = now().getHours(); return h < 11 ? "Good morning" : h < 15 ? "Good afternoon" : h < 19 ? "Good evening" : "Good night"; };
+  const saved = () => store.get("saved", {});
+
+  function stories() {
+    const today = iso(now());
+    const open = Z.courts.map((c) => ({ c, h: openSlotsToday(c.id, 1)[0] })).filter((x) => x.h !== undefined);
+    const smash = Z.events[0];
+    const [days] = countdownParts(smash.date);
+    return [
+      { id: "open", label: "Open now", initial: String(open.length), ring: "", slides: open.length
+        ? open.map((x) => ({ bg: "forest", art: courtSvg(false), title: `<span class="script">Open</span> ${hhmm(x.h)}`, text: `${x.c.name}, full panoramic. ${rp(priceFor(today, x.h, 60))} for the hour, paid at the club.`, cta: { label: `Book ${hhmm(x.h)}`, href: `#/book?court=${x.c.id}&start=${x.h}&date=${today}` } }))
+        : [{ bg: "forest", title: "Full today", text: "Tomorrow still has room.", cta: { label: "See tomorrow", href: "#/book" } }] },
+      { id: "smash", label: "Smash", initial: "S", ring: "gold", slides: [
+        { bg: "", title: `<span class="script">Smash</span> the year`, text: smash.blurb, cta: { label: "See the event", href: `#/events/${smash.slug}` } },
+        { bg: "forest", title: `${days} days to go`, text: `${smash.quota - smash.filled} of ${smash.quota} places left. ${smash.fee}, paid at the club.`, cta: { label: "Sign up", href: `#/events/${smash.slug}` } },
+        { bg: "gold", art: productArt(Z.products[1]), title: "The tee", text: "Pre-order the Smash The Year tee and collect it on finals day.", cta: { label: "Pre-order", href: "#/shop/smash-tee" } },
+      ] },
+      { id: "academy", label: "Coaches", initial: "A", ring: "ivory", slides: Object.values(Z.coaches).map((c) => ({ bg: "forest", title: `<span class="script">Meet</span> ${c.name.split(" ")[0]}`, text: `${c.role}. ${c.spec}. ${c.years} years coaching.`, cta: { label: "Book a trial class", href: "#/academy" } })) },
+      { id: "supply", label: "Supply", initial: "Z", ring: "gold", slides: Z.products.filter((p) => p.status !== "soldout").slice(0, 4).map((p) => ({ bg: "gold", art: productArt(p), title: esc(p.name), text: `${rp(p.price)}. ${STATUS_LABEL[p.status]}. Reserve now, pay when you pick it up.`, cta: { label: "Reserve", href: `#/shop/${p.slug}` } })) },
+      { id: "promos", label: "Promos", initial: "%", ring: "", slides: Z.promos.map((p) => ({ bg: "", title: p.code, text: p.text, cta: { label: "Use this code", href: p.code === "FIRSTSERVE" ? "#/beginners" : `#/book?promo=${p.code}` } })) },
+      { id: "new", label: "New here", initial: "?", ring: "ivory", slides: [
+        { bg: "forest", title: `<span class="script">Always</span> doubles`, text: "Two against two, on a court a third the size of tennis.", cta: { label: "Learn the basics", href: "#/beginners" } },
+        { bg: "", title: `<span class="script">Walls</span> are in play`, text: "Let it bounce once, then it can hit the glass before you return it.", cta: { label: "Learn the basics", href: "#/beginners" } },
+        { bg: "gold", title: "Try a class", text: "60 minutes with a coach, racket included.", cta: { label: "Book a trial class", href: "#/beginners" } },
+      ] },
+    ];
+  }
+
+  let storyTimer;
+  function showStory(id, idx = 0) {
+    clearTimeout(storyTimer);
+    const all = stories();
+    const si = all.findIndex((s) => s.id === id);
+    const s = all[si];
+    if (!s) return closeStory();
+    if (idx >= s.slides.length) return all[si + 1] ? showStory(all[si + 1].id, 0) : closeStory();
+    if (idx < 0) return si > 0 ? showStory(all[si - 1].id, all[si - 1].slides.length - 1) : showStory(id, 0);
+    const seen = store.get("seen", []); if (!seen.includes(id)) store.set("seen", [...seen, id]);
+    const sl = s.slides[idx];
+    let el = document.querySelector(".story-view");
+    if (!el) { el = document.createElement("div"); el.className = "story-view"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Story"); (document.querySelector(".device") || document.body).appendChild(el); }
+    el.dataset.id = id; el.dataset.idx = idx;
+    el.innerHTML = `
+      <div class="bars">${s.slides.map((_, i) => `<i class="${i < idx ? "done" : i === idx ? "on" : ""}"><b></b></i>`).join("")}</div>
+      <div class="top"><div class="who"><span class="av">${logo(9)}</span>zumapadelcourt <span style="opacity:.6;font-weight:400">${s.label}</span></div>
+        <button class="icon-btn" style="background:transparent" data-action="story-close" aria-label="Close">${icon("close", 22)}</button></div>
+      <div class="slide ${sl.bg}">
+        ${sl.art ? `<div class="art" aria-hidden="true">${sl.art}</div>` : ""}
+        <button class="tap prev" data-action="story-prev" aria-label="Previous"></button>
+        <button class="tap next" data-action="story-next" aria-label="Next"></button>
+        <h2 style="position:relative;z-index:2">${sl.title}</h2>
+        <p style="position:relative;z-index:2">${sl.text}</p>
+        <a class="btn ${sl.bg === "gold" ? "" : "gold"} block swipe" href="${sl.cta.href}" data-action="story-go">${sl.cta.label}</a>
+      </div>`;
+    storyTimer = setTimeout(() => showStory(id, idx + 1), 5000);
+  }
+  function closeStory() { clearTimeout(storyTimer); document.querySelectorAll(".story-view").forEach((x) => x.remove()); if (!location.hash || location.hash === "#/") rerender(); }
+
+  function reel(r) {
+    const isSaved = !!saved()[r.id];
+    const base = 20 + Math.floor(hash(r.id) * 140);
+    return `<article class="reel ${r.cls || ""} ${r.head ? "first" : ""}" aria-label="${esc(r.label)}">
+      ${r.head || ""}
+      ${r.art ? `<div class="art" aria-hidden="true">${r.streak ? '<div class="streak"></div>' : ""}${r.art}</div>` : ""}
+
+      <div class="body">
+        ${r.kicker ? `<div class="kicker chips">${r.kicker}</div>` : ""}
+        <h2>${r.title}</h2>
+        ${r.text ? `<p>${r.text}</p>` : ""}
+        ${r.extra || ""}
+        ${r.meta ? `<p class="meta">${r.meta}</p>` : ""}
+        ${r.cta}
+      </div>
+      <div class="rail">
+        <button data-action="save" data-id="${r.id}" data-title="${esc(r.label)}" data-href="${r.more || "#/"}" aria-pressed="${isSaved}" aria-label="Save"><span class="dot">${icon("heart", 22)}</span><span data-count="${base}">${base + (isSaved ? 1 : 0)}</span></button>
+        <a href="${shareWa(`${r.label} at Zuma Padel Court, Bogor: ${location.href.split("#")[0]}${r.more || "#/"}`)}" target="_blank" rel="noopener" aria-label="Share on WhatsApp"><span class="dot">${icon("share", 22)}</span><span>Share</span></a>
+        ${r.more ? `<a href="${r.more}" aria-label="More info"><span class="dot">${icon("more", 22)}</span><span>Info</span></a>` : ""}
+      </div>
+    </article>`;
+  }
+
+  function viewFeed() {
+    const today = iso(now());
+    const openCount = Z.courts.reduce((n, c) => n + openSlotsToday(c.id, 99).length, 0);
+    const next = Z.courts.map((c) => ({ c, h: openSlotsToday(c.id, 1)[0] })).filter((x) => x.h !== undefined).sort((a, b) => a.h - b.h)[0];
+    const smash = Z.events[0];
+    const [d, h] = countdownParts(smash.date);
+    const seen = store.get("seen", []);
+    const ams = Z.programs[0];
+    const carlos = Z.coaches.Carlos;
+    const polo = Z.products[0];
+    const semi = Z.bracket.rounds[1].matches[0];
+
+    const cards = [
+      next
+        ? { id: "r-open", label: `${next.c.name} at ${hhmm(next.h)}`, cls: "", hint: true, streak: true, art: courtSvg(false),
+            kicker: `<span class="chip gold">Open today</span>${addon}`, title: `<span class="script">Open</span> at ${hhmm(next.h)}`,
+            text: `${next.c.name}, full panoramic, indoor. ${rp(priceFor(today, next.h, 60))} for the hour, paid at the club.`,
+            meta: `${openCount} open court hours left today`, more: `#/book?court=${next.c.id}&start=${next.h}&date=${today}`,
+            cta: `<a class="btn gold cta" href="#/book?court=${next.c.id}&start=${next.h}&date=${today}">Book ${hhmm(next.h)}</a>` }
+        : { id: "r-full", label: "Fully booked today", hint: true, title: "Full today", text: "Tomorrow still has open courts.", cta: `<a class="btn gold cta" href="#/book">See tomorrow</a>` },
+      { id: "r-smash", label: smash.title, cls: "charcoal", streak: true, art: `<div style="font-family:var(--serif);font-weight:700;font-size:8.5rem;line-height:.8;color:var(--gold);opacity:.9">12.12</div>`, kicker: `<span class="chip">Tournament</span><span class="chip">${fmtLong(smash.date)}</span>`,
+        title: `<span class="script">Smash</span><span class="caps">The Year</span>`, text: smash.blurb,
+        extra: `<div class="count"><div><b>${d}</b><span>days</span></div><div><b>${pad(h)}</b><span>hours</span></div><div><b>${smash.quota - smash.filled}</b><span>places left</span></div></div>`,
+        meta: smash.fee + ", paid at the club", more: `#/events/${smash.slug}`, cta: `<a class="btn gold cta" href="#/events/${smash.slug}">Sign up</a>` },
+      { id: "r-voice", label: "More than a game", cls: "", streak: true, title: "", extra: `<p class="quote">${esc(Z.voice[0])}</p>`, meta: "@zumapadelcourt",
+        cta: `<a class="btn on-dark cta" href="${Z.club.instagram}" target="_blank" rel="noopener">${icon("ig", 18)} Follow on Instagram</a>` },
+      { id: "r-coach", label: `Meet ${carlos.name}`, cls: "ivory", art: `<div class="portrait" style="width:58%;font-size:6rem">C</div>`,
+        kicker: `<span class="chip">Performance Lab</span><span class="chip">Advanced</span>`, title: `<span class="script">Meet</span> Carlos`,
+        text: `${carlos.spec}. ${carlos.years} years coaching.`, more: "#/academy/performance-lab", cta: `<a class="btn cta" href="#/academy/performance-lab">Book a session</a>` },
+      { id: "r-ams", label: ams.title, cls: "charcoal", streak: true, art: courtSvg(true), kicker: ams.levels.map((l) => `<span class="chip">${l}</span>`).join(""),
+        title: `<span class="script">Americano</span><span class="caps">nights</span>`, text: ams.blurb, meta: `${ams.schedule}. ${ams.price}.`, more: "#/programs",
+        cta: `<button class="btn gold cta" data-action="interest" data-what="${esc(ams.title)}">Join the next one</button>` },
+      { id: "r-polo", label: polo.name, cls: "gold", art: `<div style="width:62%;color:var(--charcoal)">${productArt(polo)}</div>`,
+        kicker: `<span class="chip">Zuma Supply</span><span class="chip">${STATUS_LABEL[polo.status]}</span>`, title: "Court polo",
+        text: `${rp(polo.price)}. Forest or ivory. Reserve it here, try it on and pay at the pro shop.`, more: `#/shop/${polo.slug}`,
+        cta: `<a class="btn cta" href="#/shop/${polo.slug}">Reserve for pickup</a>` },
+      { id: "r-midday", label: "MIDDAY20", cls: "forest", art: `<div style="font-family:var(--serif);font-weight:700;font-size:8.5rem;line-height:.8;color:var(--gold);opacity:.9">−20%</div>`, kicker: `<span class="chip gold">Promo</span>${addon}`, title: "MIDDAY20",
+        text: Z.promos[0].text, meta: `Valid until ${fmtLong(Z.promos[0].until)}`, more: "#/promos", cta: `<a class="btn gold cta" href="#/book?promo=MIDDAY20">Book a midday court</a>` },
+      { id: "r-live", label: "Live bracket", cls: "charcoal", streak: true, art: courtSvg(true), kicker: `<span class="chip gold"><span class="live-dot" style="background:var(--charcoal)"></span>Live</span>${addon}`,
+        title: `<span class="script">Semifinal</span>`, text: `${esc(semi.a)} against ${esc(semi.b)}. ${esc(semi.score)}.`, meta: "Smash The Year, Men's open", more: "#/events/smash-the-year/bracket",
+        cta: `<a class="btn gold cta" href="#/events/smash-the-year/bracket">Open the bracket</a>` },
+      { id: "r-end", label: "All caught up", cls: "ivory", title: "You're all caught up", text: "New courts, events and drops show up here first.",
+        cta: `<div class="btn-row cta" style="width:100%"><a class="btn" href="#/book">Book a court</a><a class="btn ghost" href="#/explore">Explore</a></div>` },
+    ];
+
+    cards[0].head = `
+      <header class="feed-head">
+        <div class="row">${logo(24)}<a class="icon-btn" style="background:var(--charcoal-2)" href="${waLink("Hi Zuma, I have a question.")}" target="_blank" rel="noopener" aria-label="Chat with Zuma on WhatsApp">${icon("wa", 20)}</a></div>
+        <p class="hello">${greeting()}.<small>${openCount} open court hours left today in Bogor</small></p>
+        <div class="stories" aria-label="Stories">
+          ${stories().map((s) => `<button class="story-btn ${seen.includes(s.id) ? "seen" : ""}" data-action="story" data-id="${s.id}"><span class="ring"><span class="${s.ring}">${s.initial}</span></span>${s.label}</button>`).join("")}
+        </div>
+      </header>`;
+    return `
+      ${cards.map(reel).join("")}
+      ${tabbar("home")}`;
+  }
+
+  function viewExplore(q) {
+    const tile = (href, t, s, cls, size = "") => `<a href="${href}" class="halftone ${cls} ${size}" data-search="${esc((t + " " + s).toLowerCase())}"><span><b>${t}</b><small>${s}</small></span></a>`;
+    return `
+      ${topbar()}
+      <section class="section stack-12">
+        <label class="search">${icon("search", 18)}<span class="sr-only">Search</span><input type="search" placeholder="Search events, coaches, merch" data-action="search"></label>
+      </section>
+      <section class="section" style="padding-left:0;padding-right:0">
+        <div class="explore">
+          ${tile("#/events/smash-the-year", "Smash The Year", "Tournament, 12 Dec", "forest", "tall")}
+          ${tile("#/book", "Book a court", "4 panoramic courts", "gold")}
+          ${tile("#/academy", "Academy", "3 academies", "ivory")}
+          ${tile("#/events", "Event calendar", "All events", "forest", "wide")}
+          ${tile("#/programs", "Americano nights", "Tue and Fri", "")}
+          ${tile("#/events/rally-jolly", "Rally Jolly", "Year-end social", "gold", "tall")}
+          ${tile("#/shop", "Zuma Supply", "Merch, pick up at the club", "forest")}
+          ${tile("#/promos", "Promos", "3 codes", "ivory")}
+          ${tile("#/beginners", "New to padel", "Rules and trial class", "forest", "wide")}
+          ${tile("#/events/ladies-league-r3", "Ladies League", "Round 3, 15 Nov", "ivory")}
+          ${tile("#/events/smash-the-year/bracket", "Live bracket", "Smash The Year", "gold")}
+          ${tile("#/info", "Visit and help", "Map, hours, FAQ", "forest")}
+          ${tile("#/media-kit", "Media kit", "For sponsors", "ivory")}
+          ${tile("#/manage", "Check my booking", "By booking code", "gold")}
+        </div>
+        <p class="muted small section" data-empty hidden>Nothing matches. Try "coach", "event" or "polo".</p>
+      </section>
+      ${tabbar("explore")}`;
+  }
+
+  function viewMe() {
+    const mine = Object.values(myBookings()).filter((b) => b.status !== "Cancelled" && b.date >= iso(now())).sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+    const sv = Object.entries(saved());
+    const name = mine[0]?.name || "Guest";
+    return `
+      ${topbar()}
+      <section class="section stack-16">
+        <div class="profile-head"><div class="av">${esc(name[0])}</div>
+          <div><h1 style="font-size:var(--t-2xl)">${esc(name)}</h1><p class="small muted">No account needed. Bookings you make on this phone show up here.</p></div></div>
+        <div class="profile-stats card flat"><div><b>${mine.length}</b><span>Upcoming</span></div><div><b>${sv.length}</b><span>Saved</span></div><div><b>${Object.keys(store.get("orders", {})).length}</b><span>Orders</span></div></div>
+      </section>
+      <section class="section stack-12">
+        <div class="section-head"><h2>Upcoming</h2><a href="#/manage">Find by code</a></div>
+        ${mine.length ? mine.map((b) => `<a class="mini-ticket" href="#/booking/${b.code}"><span><span class="small" style="color:var(--ivory-3)">${Z.courts.find((c) => c.id === b.court).name}, ${fmtDate(b.date)}</span><br>${hhmm(b.start)} – ${hhmm(b.start + b.dur / 60)}</span><b>${b.code}</b></a>`).join("")
+          : `<div class="card flat stack-8"><p>No bookings on this phone yet.</p><a class="btn sm" href="#/book">Book a court</a></div>`}
+      </section>
+      <section class="section stack-12">
+        <h2>Saved</h2>
+        ${sv.length ? `<div class="menu-list">${sv.map(([, v]) => `<a href="${v.href}"><span>${esc(v.title)}</span></a>`).join("")}</div>` : `<p class="small muted">Tap the heart on any card in your feed to keep it here.</p>`}
+      </section>
+      <section class="section">
+        <div class="card forest stack-8">
+          <span class="chip gold">Coming soon</span>
+          <h3 style="font-size:var(--t-xl)">Zuma membership</h3>
+          <p class="small">Member registration opens soon. Leave your number to be first in line.</p>
+          <button class="btn gold sm" data-action="member">Get notified</button>
+        </div>
+      </section>
+      <section class="section">
+        <nav class="menu-list" aria-label="More">
+          <a href="#/info"><span>Visit and help<small>Map, hours, FAQ, WhatsApp</small></span></a>
+          <a href="#/promos"><span>Promos<small>Codes to use when booking</small></span></a>
+          <a href="#/media-kit"><span>Partner with Zuma<small>Media kit for sponsors</small></span>${addon}</a>
+        </nav>
+      </section>
+      <section class="section stack-12">
+        <div class="btn-row"><button class="btn ghost sm" data-action="style" data-style="club">Switch to Club style</button><a class="btn ghost sm" href="#/admin">Admin panel (demo)</a></div>
+        <button class="btn ghost sm" data-action="reset">Reset demo data</button>
+      </section>
+      ${tabbar("me")}`;
+  }
+
+  function viewMediaKit() {
+    const hoursPerMonth = Z.courts.length * (P.close - P.open) * 30;
+    return `
+      ${topbar("#/more")}
+      <section class="board" style="padding-top:28px">
+        <p>${addon}</p>
+        <h1 style="margin-top:10px">Partner with Zuma</h1>
+        <p class="sub" style="font-size:var(--t-md)">${esc(Z.club.tagline)}</p>
+      </section>
+      <section class="section">
+        <div class="admin-tiles" style="grid-template-columns:1fr 1fr">
+          <div class="card"><span class="small">Courts</span><b>${Z.courts.length}</b><span class="small muted">Indoor, full panoramic</span></div>
+          <div class="card"><span class="small">Court hours a month</span><b>${hoursPerMonth.toLocaleString()}</b><span class="small muted">06:00 to 23:00</span></div>
+          <div class="card"><span class="small">Instagram</span><b>521</b><span class="small muted">Followers before opening</span></div>
+          <div class="card"><span class="small">City</span><b>Bogor</b><span class="small muted">Jl. Pajajaran</span></div>
+        </div>
+        <p class="small muted">Visitor and booking numbers appear here once the app is live.</p>
+      </section>
+      <section class="section">
+        <h2>Where your brand appears</h2>
+        <div class="stack-8" style="margin-top:12px">
+          ${[["Main partner", "Logo on the home screen, every booking confirmation and the club's Wi-Fi page"], ["Court partner", "A court named after you in the app and on the glass"], ["Event partner", "Title on an event page, its bracket and live scores"], ["Café and lifestyle", "Feed cards, promos and merch collaborations"]].map(([t, d]) => `<div class="card flat"><b>${t}</b><p class="small muted" style="margin-top:2px">${d}</p></div>`).join("")}
+        </div>
+        <p class="small muted" style="margin-top:8px">Every partner gets a monthly report of views and clicks.</p>
+      </section>
+      <section class="section">
+        <h2>Upcoming events</h2>
+        <div class="stack-16" style="margin-top:12px">${Z.events.slice().sort((a, b) => a.date.localeCompare(b.date)).map(eventRow).join("")}</div>
+      </section>
+      <section class="section stack-12">
+        <a class="btn block" href="${waLink("Hi Zuma, I'd like to talk about a partnership.")}" target="_blank" rel="noopener">${icon("wa", 20)} Talk to the partnership team</a>
+        <a class="btn ghost block" href="mailto:${Z.club.email}">Email ${esc(Z.club.email)}</a>
+      </section>
+      ${tabbar("more")}`;
   }
 
   /* ---------- Admin ---------- */
@@ -956,7 +1249,7 @@
     const item = (k, href, t) => `<a class="item" href="${href}" ${active === k ? 'aria-current="page"' : ""}>${t}</a>`;
     return `<div class="admin">
       <nav class="admin-nav" aria-label="Admin">
-        <a class="wordmark" href="#/admin" style="margin-bottom:16px">Zuma admin</a>
+        <a href="#/admin" style="margin-bottom:16px;display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ivory)">${logo(20)}<span class="small" style="color:var(--gold);font-weight:700">Admin</span></a>
         ${item("home", "#/admin", "Today")}
         ${item("bookings", "#/admin/bookings", "Bookings")}
         ${item("schedule", "#/admin/schedule", "Courts and prices")}
@@ -1149,8 +1442,11 @@
     const [a, b, c] = parts;
     let key = "home", html = "";
     const isAdmin = a === "admin";
+    if (q.style === "feed" || q.style === "club") store.set("style", q.style);
+    document.body.classList.toggle("style-feed", isFeed());
 
     if (isAdmin) { key = "admin"; html = viewAdmin(b, q); }
+    else if (!a && isFeed()) { key = "feed"; html = viewFeed(); }
     else if (!a) html = viewHome();
     else if (a === "book" && b === "details") { key = "book"; html = viewBookDetails(); }
     else if (a === "book") { key = "book"; html = viewBook(q); }
@@ -1169,6 +1465,9 @@
     else if (a === "promos") { key = "promos"; html = viewPromos(); }
     else if (a === "info") { key = "info"; html = viewInfo(); }
     else if (a === "more") { key = "more"; html = viewMore(); }
+    else if (a === "explore") { key = "explore"; html = viewExplore(q); }
+    else if (a === "me") { key = "me"; html = viewMe(); }
+    else if (a === "media-kit") { key = "mediakit"; html = viewMediaKit(); }
     else html = viewNotFound("This page doesn't exist.");
     if (!html) return;
 
@@ -1176,9 +1475,9 @@
     const keepScroll = render.sameView && prevScreen ? prevScreen.scrollTop : 0;
     root.innerHTML = isAdmin
       ? html
-      : `<div class="stage">${presenter(key, false)}<div class="device"><div class="screen">${html}</div></div></div>`;
+      : `<div class="stage">${presenter(key, false)}<div class="device"><div class="screen ${key === "feed" ? "feed-screen" : ""}">${html}</div></div></div>`;
     if (isAdmin) document.title = "Zuma admin";
-    else document.title = "Zuma Padel Club";
+    else document.title = "Zuma Padel Court";
 
     const screen = document.querySelector(".screen");
     if (screen) screen.scrollTop = keepScroll;
@@ -1276,6 +1575,19 @@
       return rerender();
     }
     if (act === "export") return exportCsv(t.dataset.what);
+    if (act === "style") { store.set("style", t.dataset.style); closeStory(); location.hash === "#/" ? render() : (location.hash = "#/"); return; }
+    if (act === "story") return showStory(t.dataset.id, 0);
+    if (act === "story-next" || act === "story-prev") { const v = document.querySelector(".story-view"); return showStory(v.dataset.id, Number(v.dataset.idx) + (act === "story-next" ? 1 : -1)); }
+    if (act === "story-close" || act === "story-go") return closeStory();
+    if (act === "save") {
+      const all = saved(); const id = t.dataset.id; const on = !all[id];
+      if (on) all[id] = { title: t.dataset.title, href: t.dataset.href }; else delete all[id];
+      store.set("saved", all);
+      t.setAttribute("aria-pressed", on);
+      const c = t.querySelector("[data-count]"); c.textContent = Number(c.dataset.count) + (on ? 1 : 0);
+      return toast(on ? "Saved to Me" : "Removed from saved");
+    }
+    if (act === "member") return sheet(contactForm("Zuma membership", "Member registration opens soon. We'll WhatsApp you first.", "Get notified", "member:"));
   });
 
   document.addEventListener("submit", (ev) => {
@@ -1318,12 +1630,25 @@
         location.hash = "#/pickup/" + c;
         return;
       }
-      const msgs = { waitlist: "You're on the waitlist. We'll WhatsApp you if it opens.", event: "You're signed up. Confirmation sent on WhatsApp.", program: "Sent. The coordinator will message you.", trial: "Trial requested. A coach confirms on WhatsApp.", restock: "We'll tell you when it's back." };
+      const msgs = { waitlist: "You're on the waitlist. We'll WhatsApp you if it opens.", event: "You're signed up. Confirmation sent on WhatsApp.", program: "Sent. The coordinator will message you.", trial: "Trial requested. A coach confirms on WhatsApp.", restock: "We'll tell you when it's back.", member: "You're on the list. We'll tell you when registration opens." };
       toast(msgs[k.split(":")[0]] || "Sent");
     }
   });
 
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSheet(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeSheet(); closeStory(); }
+    if (document.querySelector(".story-view") && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+      const v = document.querySelector(".story-view");
+      showStory(v.dataset.id, Number(v.dataset.idx) + (e.key === "ArrowRight" ? 1 : -1));
+    }
+  });
+  document.addEventListener("input", (e) => {
+    if (e.target.dataset.action !== "search") return;
+    const term = e.target.value.trim().toLowerCase();
+    let shown = 0;
+    document.querySelectorAll(".explore [data-search]").forEach((el) => { const hit = !term || el.dataset.search.includes(term); el.hidden = !hit; shown += hit; });
+    const empty = document.querySelector("[data-empty]"); if (empty) empty.hidden = shown > 0;
+  });
 
   try { if (localStorage.getItem("zuma.hideAddons")) document.body.classList.add("hide-addons"); } catch {}
   window.addEventListener("hashchange", () => { closeSheet(); render(); });

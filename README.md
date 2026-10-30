@@ -1,6 +1,6 @@
 # Zuma web app mockup
 
-Clickable mockup of the Zuma Padel Club web app, for client review.
+Clickable mockup of the Zuma Padel Court (Bogor) web app, for client review. Two player app styles: Club and Feed.
 
 **Live:** https://distravantari.github.io/zuma/
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Proposal for the Zuma Padel Court web app: two styles, AYO options, packages and a payback calculator.">
+<meta name="description" content="Proposal for the Zuma Padel Court web app: two styles, AYO options, one-off packages, a subscription with an AI team and a payback calculator.">
 <meta property="og:title" content="Zuma Web App Proposal">
 <meta property="og:image" content="https://distravantari.github.io/zuma/assets/brand/og.png">
 <link rel="icon" href="assets/brand/icon.png" type="image/png">
@@ -39,6 +39,7 @@ h3 { font-size: 1.5rem; }
 p { margin: 0; }
 a { color: inherit; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+[hidden] { display: none !important; }
 .muted { color: var(--ink-2); }
 .small { font-size: 0.875rem; }
 .stack { display: grid; gap: 14px; }
@@ -106,10 +107,15 @@ section.block > .wrap > .lead { max-width: 62ch; margin-top: 12px; }
 .tier.rec .foot { border-color: var(--forest-2); }
 @media (max-width: 760px) { .tiers { grid-template-columns: 1fr; } }
 
+.sub-step { font-size: 1.35rem; margin-top: 36px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.sub-step .small { font-family: var(--body); font-weight: 400; }
 .table-wrap { overflow-x: auto; margin-top: 20px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; min-width: 520px; }
 th { text-align: left; font-size: 0.8125rem; color: var(--ink-2); font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 2px solid var(--ink); }
 td { padding: 11px 12px 11px 0; border-bottom: 1.5px solid var(--ivory-3); vertical-align: top; }
+table.fit { min-width: 0; }
+td.num .small { font-variant-numeric: lining-nums; }
+@media (max-width: 560px) { table.fit { font-size: 0.875rem; } table.fit td.num { white-space: normal; } }
 td.num, th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums lining-nums; }
 
 /* Estimator */
@@ -123,6 +129,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .seg span { display: inline-block; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--ink); font-weight: 600; font-size: 0.9375rem; cursor: pointer; }
 .seg input:checked + span { background: var(--ink); color: var(--ivory); }
 .seg input:focus-visible + span { outline: 3px solid var(--gold); outline-offset: 2px; }
+.seg input:disabled + span { opacity: 0.4; cursor: not-allowed; }
 .checks { display: grid; gap: 6px; }
 .checks label { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: start; font-size: 0.9375rem; padding: 6px 0; border-bottom: 1px solid var(--ivory-3); cursor: pointer; }
 .checks input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--forest); }
@@ -292,12 +299,100 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
     </div>
   </section>
 
+  <section class="block" aria-labelledby="sub-h">
+    <div class="wrap">
+      <span class="tag">New option</span>
+      <h2 id="sub-h" style="margin-top:10px">Subscription: app + AI team</h2>
+      <p class="lead muted">The same app for a smaller setup fee, plus a team of AI agents that runs the daily work and fixes the app. You talk to one Chief agent in a chat. It passes the work to the right agent and reports back with proof.</p>
+
+      <h3 class="sub-step">1 · Setup, paid once <span class="muted small">50% to start, 50% at launch</span></h3>
+      <div class="options">
+        <div class="option rec"><span class="letter" aria-hidden="true">G</span><div><b>Growth scope (recommended)</b><p class="small muted">Everything in the Growth package: booking, academy, merch, brackets, full admin and WhatsApp confirmations.</p></div><span class="price">Rp 45 jt</span></div>
+        <div class="option"><span class="letter" aria-hidden="true">S</span><div><b>Starter scope</b><p class="small muted">Everything in the Starter package: booking, events, programs, promos and admin.</p></div><span class="price">Rp 25 jt</span></div>
+      </div>
+
+      <h3 class="sub-step">2 · Your team, monthly <span class="muted small">6-month minimum, then month to month</span></h3>
+      <div class="tiers">
+        <article class="tier">
+          <div class="name"><h3>Starter team</h3></div>
+          <p class="amount">Rp 3.5 jt <small>/ month</small></p>
+          <ul>
+            <li>Chief + 2 agents</li>
+            <li>AI usage up to Rp 500k included</li>
+            <li>No Tech agent: app fixes are quoted per fix</li>
+          </ul>
+        </article>
+        <article class="tier rec">
+          <div class="name"><h3>Core team</h3><span class="tag">Recommended</span></div>
+          <p class="amount">Rp 7.5 jt <small>/ month</small></p>
+          <ul>
+            <li>Chief + 4 agents, including Tech</li>
+            <li>Tech fixes and changes your app, tests first and keeps an Undo</li>
+            <li>AI usage up to Rp 1 jt included</li>
+            <li>Monthly report with proof</li>
+          </ul>
+        </article>
+        <article class="tier">
+          <div class="name"><h3>Full team</h3></div>
+          <p class="amount">Rp 15 jt <small>/ month</small></p>
+          <ul>
+            <li>Chief + up to 8 agents</li>
+            <li>AI usage up to Rp 2.5 jt included</li>
+            <li>Weekly report, your questions answered first</li>
+          </ul>
+        </article>
+      </div>
+      <p class="small muted" style="margin-top:12px">Extra agent on any plan: Rp 1.5 jt a month. Pay 12 months up front and get 2 months free. AI usage above what's included is billed at cost, and only after you raise the limit yourself.</p>
+
+      <h3 class="sub-step">The team we suggest for Zuma</h3>
+      <p class="muted small" style="margin-top:6px">Five roles, so it fits the Core team.</p>
+      <div class="table-wrap">
+        <table class="fit">
+          <thead><tr><th>Agent</th><th>What it does for Zuma</th></tr></thead>
+          <tbody>
+            <tr><td><b>Chief</b></td><td>The one you chat with. Turns your message into work, assigns it and reports back.</td></tr>
+            <tr><td><b>Tech</b></td><td>Fixes bugs and makes small changes to the app: prices, photos, promo pages, new fields.</td></tr>
+            <tr><td><b>Marketing</b></td><td>Drafts Instagram posts for open slots and events in your voice. You approve before it posts.</td></tr>
+            <tr><td><b>Research</b></td><td>Watches competitor prices and promos across Bogor's padel venues, with a short report on your schedule.</td></tr>
+            <tr><td><b>Sales</b></td><td>Finds sponsors and partners, and prepares decks and follow-ups for you to send.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub-step">Your first year, side by side</h3>
+      <div class="table-wrap">
+        <table class="fit">
+          <thead><tr><th></th><th class="num">One-off build</th><th class="num">Subscription</th></tr></thead>
+          <tbody>
+            <tr><td>App (Growth scope)</td><td class="num">Rp 98 jt</td><td class="num">Rp 45 jt</td></tr>
+            <tr><td>12 months</td><td class="num">Rp 36 jt<br><span class="small muted">Care, Rp&nbsp;3&nbsp;jt&nbsp;×&nbsp;12</span></td><td class="num">Rp 90 jt<br><span class="small muted">Core team, Rp&nbsp;7.5&nbsp;jt&nbsp;×&nbsp;12</span></td></tr>
+            <tr><td><b>Year one</b></td><td class="num"><b>Rp 134 jt</b></td><td class="num"><b>Rp 135 jt</b></td></tr>
+            <tr><td>Each month you get</td><td>Hosting care, bug fixes, up to 4 hours of changes</td><td>Five agents working every day, app fixes included</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin-top:10px">About the same money in year one. The subscription includes a working team. Running costs on your own accounts (about Rp 1.4 jt a month) apply to both.</p>
+
+      <div class="terms">
+        <div><h3>Who you contact</h3><ul><li>Your Chief agent, in the same chat you use for everything else</li><li>Bugs go to Tech, which fixes, tests and ships them</li><li>Anything the team can't fix, a person picks up within 2 working days</li><li>A new feature bigger than about a day of work is quoted first</li></ul></div>
+        <div><h3>If you stop</h3><ul><li>The app keeps running, on your accounts and your domain</li><li>The app, domain and data stay in Zuma's name</li><li>The agents switch off. Any developer can take over the code</li></ul></div>
+      </div>
+    </div>
+  </section>
+
   <section class="block" aria-labelledby="est-h">
     <div class="wrap">
       <h2 id="est-h">Build your package</h2>
-      <p class="lead muted">Pick a package, a style and any extras. The total updates as you go. Prices exclude PPN.</p>
+      <p class="lead muted">Pick one-off or subscription, a package, a style and any extras. The total updates as you go. Prices exclude PPN.</p>
       <div class="estimator">
         <form class="panel" id="est" onsubmit="return false">
+          <fieldset>
+            <legend>How you pay</legend>
+            <div class="seg">
+              <label><input type="radio" name="mode" id="m-oneoff" value="oneoff" checked><span>One-off build</span></label>
+              <label><input type="radio" name="mode" id="m-sub" value="sub"><span>Subscription: app + AI team</span></label>
+            </div>
+          </fieldset>
           <fieldset>
             <legend>Package</legend>
             <div class="seg">
@@ -305,6 +400,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
               <label><input type="radio" name="tier" id="t-growth" value="growth" checked><span>Growth</span></label>
               <label><input type="radio" name="tier" id="t-pro" value="pro"><span>Pro</span></label>
             </div>
+            <p class="small muted" id="pro-note" hidden style="margin-top:8px">Pro scope on a subscription is quoted from the mockup you approve.</p>
           </fieldset>
           <fieldset>
             <legend>Style</legend>
@@ -317,7 +413,32 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
             <legend>Extras</legend>
             <div class="checks" id="addons"></div>
           </fieldset>
+          <div id="team-set" class="stack" hidden>
           <fieldset>
+            <legend>Your AI team</legend>
+            <div class="seg">
+              <label><input type="radio" name="team" id="tm-starter" value="3.5"><span>Starter, Rp 3.5 jt/mo</span></label>
+              <label><input type="radio" name="team" id="tm-core" value="7.5" checked><span>Core, Rp 7.5 jt/mo</span></label>
+              <label><input type="radio" name="team" id="tm-full" value="15"><span>Full, Rp 15 jt/mo</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Extra agents, Rp 1.5 jt/mo each</legend>
+            <div class="seg">
+              <label><input type="radio" name="extra" id="x-0" value="0" checked><span>None</span></label>
+              <label><input type="radio" name="extra" id="x-1" value="1"><span>+1</span></label>
+              <label><input type="radio" name="extra" id="x-2" value="2"><span>+2</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Team payment</legend>
+            <div class="seg">
+              <label><input type="radio" name="prepay" id="p-month" value="0" checked><span>Monthly</span></label>
+              <label><input type="radio" name="prepay" id="p-year" value="1"><span>12 months up front, 2 free</span></label>
+            </div>
+          </fieldset>
+          </div>
+          <fieldset id="care-set">
             <legend>After launch</legend>
             <div class="seg">
               <label><input type="radio" name="care" id="c-none" value="0"><span>No plan</span></label>
@@ -327,7 +448,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
           </fieldset>
         </form>
         <aside class="total" aria-live="polite">
-          <span class="small" style="color:var(--ivory-3)">One-time build</span>
+          <span class="small" style="color:var(--ivory-3)" id="tot-label">One-time build</span>
           <p class="big" id="tot">Rp 98 jt</p>
           <dl id="lines"></dl>
           <dl class="split" id="split"></dl>
@@ -383,7 +504,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
     <div class="wrap">
       <h2 id="terms-h">How we work</h2>
       <div class="terms">
-        <div><h3>Payment</h3><ul><li>40% on signing</li><li>30% at the staging demo, with every screen working on your real content</li><li>30% at launch</li><li>Pro: 30 / 30 / 30, and the last 10% 30 days after launch</li></ul></div>
+        <div><h3>Payment</h3><ul><li>40% on signing</li><li>30% at the staging demo, with every screen working on your real content</li><li>30% at launch</li><li>Pro: 30 / 30 / 30, and the last 10% 30 days after launch</li><li>Subscription: setup 50% to start and 50% at launch. The team is monthly, with a 6-month minimum, or 12 months up front with 2 months free</li></ul></div>
         <div><h3>You own it</h3><ul><li>The code, domain and accounts are in your name</li><li>Player data stays in your database and can be exported any time</li><li>No commission on bookings, ever</li></ul></div>
         <div><h3>Changes</h3><ul><li>One round of revisions at each milestone</li><li>Anything outside the package is quoted before we start it</li></ul></div>
         <div><h3>What we need from you</h3><ul><li>Photos, coach bios, final prices and opening hours</li><li>Your WhatsApp Business number</li><li>Language: English, Indonesian or both</li></ul></div>
@@ -396,8 +517,8 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
       <h2 id="next-h">Next steps</h2>
       <ol class="steps">
         <li>Try both styles on your phone and pick one.</li>
-        <li>Choose a package and an AYO option. We can settle both in a 30-minute call.</li>
-        <li>Sign and pay the 40% deposit. We start the same week.</li>
+        <li>Choose a package (one-off or subscription) and an AYO option. We can settle both in a 30-minute call.</li>
+        <li>Sign and pay the deposit: 40% for a one-off build, 50% of the setup for a subscription. We start the same week.</li>
         <li>See your real content on the staging demo, then launch.</li>
       </ol>
     </div>
@@ -416,6 +537,10 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 <script>
 (() => {
   const TIERS = { starter: 48, growth: 98, pro: 165 };
+  // Subscription setup by scope; Pro scope is quoted, so it has no entry.
+  const SUB_SETUP = { starter: 25, growth: 45 };
+  const TEAMS = { 3.5: "Starter team", 7.5: "Core team", 15: "Full team" };
+  const EXTRA_AGENT = 1.5;
   const NAMES = { starter: "Starter", growth: "Growth", pro: "Pro" };
   // Extras; "pro" marks the ones already inside the Pro bundle.
   const ADDONS = [
@@ -440,12 +565,20 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   const box = $("#addons");
   box.innerHTML = ADDONS.map((a) => `<label id="l-${a.id}"><input type="checkbox" id="a-${a.id}" value="${a.id}"><span>${a.name}</span><span class="p">${a.from ? "from " : ""}${fmt(a.p)}</span></label>`).join("");
 
+  const val = (name) => document.querySelector(`input[name=${name}]:checked`).value;
+
   function update() {
-    const tier = document.querySelector("input[name=tier]:checked").value;
-    const style = document.querySelector("input[name=style]:checked").value;
-    const care = Number(document.querySelector("input[name=care]:checked").value);
-    let total = TIERS[tier];
-    const lines = [[NAMES[tier] + " package", fmt(TIERS[tier])]];
+    const sub = val("mode") === "sub";
+    $("#t-pro").disabled = sub;
+    $("#pro-note").hidden = !sub;
+    if (sub && $("#t-pro").checked) $("#t-growth").checked = true;
+    $("#team-set").hidden = !sub;
+    $("#care-set").hidden = sub;
+    const tier = val("tier");
+    const style = val("style");
+    const care = Number(val("care"));
+    let total = sub ? SUB_SETUP[tier] : TIERS[tier];
+    const lines = [[sub ? NAMES[tier] + " scope setup" : NAMES[tier] + " package", fmt(total)]];
     if (style === "feed") { total += 10; lines.push(["Feed story and card manager", fmt(10)]); }
     let hasFrom = false;
     ADDONS.forEach((a) => {
@@ -456,10 +589,26 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
       label.querySelector(".p").textContent = inPro ? "In Pro" : (a.from ? "from " : "") + fmt(a.p);
       if (input.checked && !inPro) { total += a.p; lines.push([a.name, (a.from ? "from " : "") + fmt(a.p)]); if (a.from) hasFrom = true; }
     });
+    $("#tot-label").textContent = sub ? "Setup, paid once" : "One-time build";
     $("#tot").textContent = (hasFrom ? "From " : "") + fmt(total);
+    const from = hasFrom ? "from " : "";
+    if (sub) {
+      const team = Number(val("team")), extra = Number(val("extra")), prepay = val("prepay") === "1";
+      const perMonth = team + extra * EXTRA_AGENT;
+      lines.push([TEAMS[team] + (extra ? ` + ${extra} extra agent${extra > 1 ? "s" : ""}` : ""), fmt(perMonth) + " / mo"]);
+      $("#lines").innerHTML = lines.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+      const half = Math.round(total * 5) / 10;
+      const teamYear = perMonth * (prepay ? 10 : 12);
+      $("#split").innerHTML = `<dt>Setup to start</dt><dd>${from}${fmt(half)}</dd><dt>Setup at launch</dt><dd>${from}${fmt(half)}</dd>` +
+        (prepay ? `<dt>Team, 12 months up front</dt><dd>${fmt(teamYear)}</dd>` : `<dt>Team, each month</dt><dd>${fmt(perMonth)}</dd>`) +
+        `<dt><b>Your first year</b></dt><dd><b>${from}${fmt(total + teamYear)}</b></dd>`;
+      $("#monthly").textContent = `6-month minimum on the team, then month to month.${prepay ? " Paying up front saves 2 months." : ""} Plus about Rp 1.4 jt a month in running costs on your own accounts.`;
+      return;
+    }
     $("#lines").innerHTML = lines.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
     const [d, m, l] = tier === "pro" ? [0.3, 0.3, 0.4] : [0.4, 0.3, 0.3];
-    $("#split").innerHTML = `<dt>On signing</dt><dd>${fmt(Math.round(total * d * 10) / 10)}</dd><dt>At staging demo</dt><dd>${fmt(Math.round(total * m * 10) / 10)}</dd><dt>At launch${tier === "pro" ? " and 30 days after" : ""}</dt><dd>${fmt(Math.round(total * l * 10) / 10)}</dd>`;
+    $("#split").innerHTML = `<dt>On signing</dt><dd>${fmt(Math.round(total * d * 10) / 10)}</dd><dt>At staging demo</dt><dd>${fmt(Math.round(total * m * 10) / 10)}</dd><dt>At launch${tier === "pro" ? " and 30 days after" : ""}</dt><dd>${fmt(Math.round(total * l * 10) / 10)}</dd>` +
+      (care ? `<dt><b>Your first year, with the plan</b></dt><dd><b>${from}${fmt(total + care * 12)}</b></dd>` : "");
     $("#monthly").textContent = care ? `Plus ${fmt(care)} a month for the ${care === 3 ? "Care" : "Growth partner"} plan, and about Rp 1.4 jt a month in running costs.` : "Plus about Rp 1.4 jt a month in running costs.";
   }
   $("#est").addEventListener("change", update);

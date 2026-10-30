@@ -491,7 +491,11 @@ details.faq p { margin-top: 8px; color: var(--charcoal-2); font-size: var(--t-sm
    Feed style: the second player app, built on Instagram / TikTok habits.
    Immersive dark feed and stories; inner pages stay light like IG.
    ===================================================================== */
-.style-feed .screen.feed-screen { padding-bottom: 0; background: var(--charcoal); }
+/* One tab-bar height drives card height and the feed's bottom padding,
+   so the last card can scroll fully into view. */
+:root { --tab-h: 80px; --tab-safe: env(safe-area-inset-bottom, 0px); }
+.style-feed .screen.feed-screen { padding-bottom: calc(var(--tab-h) + var(--tab-safe)); background: var(--charcoal); }
+@media (min-width: 1000px) { .style-feed .device .screen.feed-screen { padding-bottom: var(--tab-h); } }
 html:has(.feed-screen) { scroll-snap-type: y mandatory; }
 @media (min-width: 1000px) {
   html:has(.feed-screen) { scroll-snap-type: none; }
@@ -517,12 +521,12 @@ html:has(.feed-screen) { scroll-snap-type: y mandatory; }
 
 .reel {
   position: relative; scroll-snap-align: start; scroll-snap-stop: always;
-  height: calc(100dvh - 68px); min-height: 520px;
+  height: calc(100dvh - var(--tab-h) - var(--tab-safe)); min-height: 520px;
   display: flex; flex-direction: column; justify-content: flex-end;
   padding: 20px 72px 24px var(--gutter); color: var(--ivory); overflow: hidden;
   background: var(--forest);
 }
-@media (min-width: 1000px) { .device .reel { height: calc(min(860px, 100dvh - 64px) - 20px - 68px); min-height: 0; } }
+@media (min-width: 1000px) { .device .reel { height: calc(min(860px, 100dvh - 64px) - 20px - var(--tab-h)); min-height: 0; } }
 .reel.charcoal { background: var(--charcoal); }
 .reel.gold { background: var(--gold); color: var(--charcoal); }
 .reel.ivory { background: var(--ivory); color: var(--charcoal); }
@@ -580,7 +584,8 @@ html:has(.feed-screen) { scroll-snap-type: y mandatory; }
 .story-view .swipe { position: relative; z-index: 2; margin-top: 18px; }
 
 /* Feed tab bar: five slots, raised book button in the middle */
-.tabbar.five { grid-template-columns: repeat(5, 1fr); align-items: end; }
+.tabbar.five { grid-template-columns: repeat(5, 1fr); align-items: end; height: calc(var(--tab-h) + var(--tab-safe)); }
+@media (min-width: 1000px) { .device .tabbar.five { height: var(--tab-h); padding-bottom: 8px; } }
 .tabbar .book-fab { display: grid; justify-items: center; gap: 2px; }
 .tabbar .book-fab .fab { width: 48px; height: 48px; margin-top: -18px; border-radius: 16px; background: var(--gold); color: var(--charcoal); display: grid; place-items: center; border: 3px solid var(--charcoal); }
 .tabbar a.book-fab[aria-current="page"] { background: none; color: var(--gold); }

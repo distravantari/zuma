@@ -8,6 +8,8 @@ Clickable mockup of the Zuma Padel Court (Bogor) web app, for client review. Two
 - Admin panel: `#/admin` (bookings, courts and prices, content, merch orders, contacts and CSV export, reports).
 - All data is sample data in `assets/js/data.js`. Bookings made in the demo stay in your browser only.
 
+Proposal: https://distravantari.github.io/zuma/proposal.html
+
 Design notes: [DESIGN.md](DESIGN.md).
 
 ## Run locally

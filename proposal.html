@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Proposal for the Zuma Padel Court web app: two styles, AYO options, packages and a payback calculator.">
+<meta property="og:title" content="Zuma Web App Proposal">
+<meta property="og:image" content="https://distravantari.github.io/zuma/assets/brand/og.png">
+<link rel="icon" href="assets/brand/icon.png" type="image/png">
+<title>Zuma Web App Proposal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pinyon+Script&family=Schibsted+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one reading column on Zuma ivory; forest bands open and close the document. */
+:root {
+  --forest: #263c30;
+  --forest-2: #2f4a3b;
+  --ivory: #f5f1e6;
+  --ivory-2: #ece5d3;
+  --ivory-3: #e2d9c2;
+  --gold: #dfcc8a;
+  --ink: #202421;
+  --ink-2: #4a504b;
+  --display: "Cormorant Garamond", Georgia, serif;
+  --script: "Pinyon Script", "Cormorant Garamond", cursive;
+  --body: "Schibsted Grotesk", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+img { max-width: 100%; }
+body { background: var(--ivory); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; font-variant-numeric: lining-nums; }
+.wrap { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.05; margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(1.9rem, 4vw, 2.6rem); }
+h3 { font-size: 1.5rem; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.muted { color: var(--ink-2); }
+.small { font-size: 0.875rem; }
+.stack { display: grid; gap: 14px; }
+section.block { padding-block: 56px 0; }
+section.block > .wrap > .lead { max-width: 62ch; margin-top: 12px; }
+
+/* Hero */
+.hero { background: var(--forest); color: var(--ivory); }
+.hero .wrap { padding-block: 40px 48px; display: grid; gap: 28px; }
+.hero img.logo { height: 34px; width: auto; }
+.hero h1 { font-size: clamp(2.6rem, 7vw, 4.4rem); line-height: 0.95; }
+.hero h1 .script { font-family: var(--script); font-weight: 400; font-size: 1.12em; margin-right: 8px; color: var(--gold); }
+.hero .sub { max-width: 56ch; color: var(--ivory-3); font-size: 1.05rem; }
+.hero .meta { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 0.875rem; color: var(--ivory-3); }
+.hero .meta b { color: var(--ivory); font-weight: 600; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 20px; border-radius: 999px; border: 2px solid var(--forest); background: var(--forest); color: var(--ivory); font-weight: 600; text-decoration: none; cursor: pointer; font: inherit; font-weight: 600; }
+.btn.gold { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.btn.line { background: transparent; color: var(--ivory); border-color: var(--ivory); }
+.btn.ghost { background: transparent; color: var(--forest); }
+.btns { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Facts strip */
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+.facts div { padding: 16px 14px; }
+.facts div + div { border-left: 1.5px solid var(--ivory-3); }
+.facts b { display: block; font-family: var(--display); font-size: 2.2rem; line-height: 1; }
+.facts span { font-size: 0.8125rem; color: var(--ink-2); }
+@media (max-width: 640px) { .facts { grid-template-columns: 1fr 1fr; } .facts div:nth-child(3) { border-left: 0; } .facts div:nth-child(n+3) { border-top: 1.5px solid var(--ivory-3); } }
+
+.reasons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 32px; margin-top: 28px; }
+.reasons div { min-width: 0; }
+.reasons h3 { font-size: 1.35rem; margin-bottom: 6px; }
+@media (max-width: 640px) { .reasons { grid-template-columns: 1fr; } }
+
+/* Styles */
+.styles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.style { border: 2px solid var(--ink); border-radius: 20px; padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.style.feed { background: var(--ink); color: var(--ivory); border-color: var(--ink); }
+.style.feed .muted { color: var(--ivory-3); }
+.style.feed .btn { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.style h3 { font-size: 1.8rem; }
+.style ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.9375rem; }
+.tag { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--gold); color: var(--ink); justify-self: start; }
+@media (max-width: 640px) { .styles { grid-template-columns: 1fr; } }
+
+/* AYO options */
+.options { margin-top: 24px; display: grid; gap: 10px; }
+.option { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 16px; border-radius: 16px; background: var(--ivory-2); }
+.option.rec { background: var(--forest); color: var(--ivory); }
+.option.rec .muted { color: var(--ivory-3); }
+.option .letter { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 1.5rem; border: 2px solid currentColor; }
+.option .price { font-family: var(--display); font-size: 1.25rem; white-space: nowrap; text-align: right; }
+@media (max-width: 560px) { .option { grid-template-columns: 44px minmax(0, 1fr); } .option .price { grid-column: 2; text-align: left; } }
+
+/* Packages */
+.tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 24px; align-items: stretch; }
+.tier { border: 2px solid var(--ink); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; background: var(--ivory); }
+.tier.rec { background: var(--forest); color: var(--ivory); border-color: var(--forest); }
+.tier.rec .muted { color: var(--ivory-3); }
+.tier .name { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.tier .amount { font-family: var(--display); font-size: 2.6rem; line-height: 1; }
+.tier .amount small { font-family: var(--body); font-size: 0.875rem; font-weight: 400; }
+.tier ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 0.9rem; }
+.tier .foot { margin-top: auto; padding-top: 12px; border-top: 1.5px solid var(--ivory-3); font-size: 0.8125rem; }
+.tier.rec .foot { border-color: var(--forest-2); }
+@media (max-width: 760px) { .tiers { grid-template-columns: 1fr; } }
+
+.table-wrap { overflow-x: auto; margin-top: 20px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; min-width: 520px; }
+th { text-align: left; font-size: 0.8125rem; color: var(--ink-2); font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 2px solid var(--ink); }
+td { padding: 11px 12px 11px 0; border-bottom: 1.5px solid var(--ivory-3); vertical-align: top; }
+td.num, th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums lining-nums; }
+
+/* Estimator */
+.estimator { margin-top: 24px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.panel { border: 2px solid var(--ink); border-radius: 20px; padding: 20px; display: grid; gap: 18px; min-width: 0; }
+.panel legend { font-weight: 700; padding: 0; margin-bottom: 8px; font-size: 0.9375rem; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; }
+.seg span { display: inline-block; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--ink); font-weight: 600; font-size: 0.9375rem; cursor: pointer; }
+.seg input:checked + span { background: var(--ink); color: var(--ivory); }
+.seg input:focus-visible + span { outline: 3px solid var(--gold); outline-offset: 2px; }
+.checks { display: grid; gap: 6px; }
+.checks label { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: start; font-size: 0.9375rem; padding: 6px 0; border-bottom: 1px solid var(--ivory-3); cursor: pointer; }
+.checks input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--forest); }
+.checks .p { font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; color: var(--ink-2); }
+.checks label.included { opacity: 0.55; cursor: default; }
+.total { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--forest); color: var(--ivory); border-radius: 20px; padding: 22px; display: grid; gap: 12px; }
+.total .big { font-family: var(--display); font-size: 3rem; line-height: 1; }
+.total dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; font-size: 0.875rem; }
+.total dt { color: var(--ivory-3); }
+.total dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums lining-nums; }
+.total .split { border-top: 1.5px dashed var(--forest-2); padding-top: 12px; }
+@media (max-width: 760px) { .estimator { grid-template-columns: 1fr; } .total { position: static; } }
+
+/* ROI */
+.roi { margin-top: 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: center; }
+.roi .field { display: grid; gap: 6px; }
+.roi label { font-weight: 600; font-size: 0.9375rem; }
+.roi input[type=range] { width: 100%; accent-color: var(--forest); }
+.roi output { font-family: var(--display); font-size: 1.3rem; }
+.roi .answer { background: var(--gold); border-radius: 20px; padding: 22px; }
+.roi .answer b { display: block; font-family: var(--display); font-size: 2.6rem; line-height: 1; }
+@media (max-width: 640px) { .roi { grid-template-columns: 1fr; } }
+
+.terms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 32px; margin-top: 24px; }
+.terms div { min-width: 0; }
+.terms h3 { font-size: 1.3rem; margin-bottom: 8px; }
+.terms ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+@media (max-width: 640px) { .terms { grid-template-columns: 1fr; } }
+
+.steps { margin: 20px 0 0; padding-left: 22px; display: grid; gap: 10px; max-width: 64ch; }
+.steps li::marker { font-family: var(--display); font-weight: 700; color: var(--forest); }
+
+.close { background: var(--forest); color: var(--ivory); margin-top: 64px; }
+.close .wrap { padding-block: 44px; display: grid; gap: 18px; }
+.close h2 { color: var(--ivory); }
+.close .muted { color: var(--ivory-3); }
+.copyline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.copyline code { font-family: var(--body); background: var(--forest-2); padding: 8px 12px; border-radius: 10px; user-select: all; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <img class="logo" src="assets/brand/zuma-logo-white.png" alt="Zuma">
+    <h1><span class="script">Your</span>own app, for your own players</h1>
+    <p class="sub">A web app for Zuma Padel Court that books courts, fills events and academy classes, sells merch and gives sponsors a place to be seen. No download. It opens from your Instagram bio.</p>
+    <div class="meta"><span>Prepared for <b>Zuma Padel Court, Jose Pratama Group</b></span><span>Date <b>30 October 2026</b></span><span>Valid <b>30 days</b></span></div>
+    <div class="btns">
+      <a class="btn gold" href="https://distravantari.github.io/zuma/#/?style=club" target="_blank" rel="noopener">Open the Club style mockup</a>
+      <a class="btn line" href="https://distravantari.github.io/zuma/#/?style=feed" target="_blank" rel="noopener">Open the Feed style mockup</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="block" aria-labelledby="why-h">
+    <div class="wrap">
+      <h2 id="why-h">Why Zuma needs its own app</h2>
+      <p class="lead muted">Bogor already has 28 padel venues on AYO, and more open every month. On a marketplace, Zuma sits in a list next to cheaper courts. Your own app is where Zuma looks the way it does on Instagram, and where every player becomes a contact you can reach again.</p>
+      <div class="facts" style="margin-top:24px">
+        <div><b>4</b><span>Indoor full-panoramic courts</span></div>
+        <div><b>2,040</b><span>Court hours to sell each month</span></div>
+        <div><b>28</b><span>Padel venues in Kota Bogor</span></div>
+        <div><b>1.5%</b><span>More occupancy pays for Growth in a year</span></div>
+      </div>
+      <div class="reasons">
+        <div><h3>Own your player list</h3><p class="muted">Every booking, event sign-up and trial class leaves a name and WhatsApp number, with consent. That list is yours, not a platform's.</p></div>
+        <div><h3>Fill the quiet hours</h3><p class="muted">Empty slots shown live, a waitlist for cancellations and off-peak promos move players into hours that would otherwise go unsold.</p></div>
+        <div><h3>Look as premium as you are</h3><p class="muted">Your logo, your colours, your film photography and your voice. "More than a game" on every screen, not a listing card.</p></div>
+        <div><h3>Give sponsors something to buy</h3><p class="muted">Partner slots on home and event pages, live brackets and a monthly report of views and clicks turn the app into inventory you can sell.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="style-h">
+    <div class="wrap">
+      <h2 id="style-h">Pick the style your players will love</h2>
+      <p class="lead muted">Both styles cover the same features and share one admin panel. Try both on your phone, then choose one. Either style is included in every package.</p>
+      <div class="styles">
+        <div class="style">
+          <span class="tag">Club</span>
+          <h3>Calm and editorial</h3>
+          <p class="muted">A live court board opens the app. Everything else is one tap away.</p>
+          <ul><li>Four tabs: Home, Book, Events, More</li><li>Court grid with every time at a glance</li><li>Best for regulars and corporate groups who just want to book</li></ul>
+          <a class="btn ghost" href="https://distravantari.github.io/zuma/#/?style=club" target="_blank" rel="noopener">Try Club</a>
+        </div>
+        <div class="style feed">
+          <span class="tag">Feed</span>
+          <h3>Stories and a swipeable feed</h3>
+          <p class="muted">Built on the habits your players already have from Instagram and TikTok.</p>
+          <ul><li>Stories for open courts, events, coaches and drops</li><li>Full-screen cards with save and WhatsApp share</li><li>Best for a young, social crowd and a content-rich brand like yours</li></ul>
+          <a class="btn" href="https://distravantari.github.io/zuma/#/?style=feed" target="_blank" rel="noopener">Try Feed</a>
+        </div>
+      </div>
+      <p class="small muted" style="margin-top:12px">Choosing Feed? Add the story and feed-card manager (Rp 10 jt) so your team can post stories from the admin panel without a developer.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="ayo-h">
+    <div class="wrap">
+      <h2 id="ayo-h">Working alongside AYO</h2>
+      <p class="lead muted">You already list on AYO. The app has to sell the same courts without double bookings. Three ways to do it:</p>
+      <div class="options">
+        <div class="option"><span class="letter" aria-hidden="true">A</span><div><b>Hand-off to AYO</b><p class="small muted">The app shows courts, prices and events. The Book button opens your AYO page. Booking data stays with AYO.</p></div><span class="price">Starter from Rp 38 jt</span></div>
+        <div class="option rec"><span class="letter" aria-hidden="true">B</span><div><b>Your own booking, AYO as an extra channel (recommended)</b><p class="small muted">The app is your main booking system. Your front desk blocks slots sold on AYO from the admin panel. Every player booked here is yours to reach again.</p></div><span class="price">Included</span></div>
+        <div class="option"><span class="letter" aria-hidden="true">C</span><div><b>Synced with AYO</b><p class="small muted">One shared calendar between both. Possible only if AYO gives API access; we confirm this with AYO before quoting.</p></div><span class="price">From Rp 15 jt</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="pkg-h">
+    <div class="wrap">
+      <h2 id="pkg-h">Packages</h2>
+      <p class="lead muted">Fixed scope, fixed price. You own the code, the content and every player's data from day one.</p>
+      <div class="tiers">
+        <article class="tier">
+          <div class="name"><h3>Starter</h3></div>
+          <p class="amount">Rp 48 jt</p>
+          <p class="small muted">Booking live by opening day</p>
+          <ul>
+            <li>Home with banners, club info and sponsor logos</li>
+            <li>Court booking with live availability, peak and off-peak prices, booking code, change and cancel by code</li>
+            <li>Event list, detail and sign-up</li>
+            <li>Programs with WhatsApp sign-up</li>
+            <li>Promos and promo codes</li>
+            <li>FAQ, map, hours, WhatsApp contact</li>
+            <li>Google Analytics, Meta Pixel, share links, SEO</li>
+            <li>Admin for courts, prices, bookings, banners, promos, events, CSV export</li>
+          </ul>
+          <p class="foot">5 weeks</p>
+        </article>
+        <article class="tier rec">
+          <div class="name"><h3>Growth</h3><span class="tag">Recommended</span></div>
+          <p class="amount">Rp 98 jt</p>
+          <p class="small muted">Everything in your feature list</p>
+          <ul>
+            <li>Everything in Starter</li>
+            <li>Academy: a page per academy, coaches, levels, class schedule, packages, trial class form</li>
+            <li>Zuma merch: catalog, sizes, stock labels, reserve online and pay at pickup, lookbook, event merch</li>
+            <li>Brackets and results pages</li>
+            <li>Full admin for every content type and merch orders</li>
+            <li>WhatsApp confirmation with booking code</li>
+            <li>Membership waiting list</li>
+            <li>30 days of support after launch</li>
+          </ul>
+          <p class="foot">9 weeks</p>
+        </article>
+        <article class="tier">
+          <div class="name"><h3>Pro</h3></div>
+          <p class="amount">Rp 165 jt</p>
+          <p class="small muted">Fill empty hours and sell sponsors</p>
+          <ul>
+            <li>Everything in Growth</li>
+            <li>Live open-slots board, waitlist with WhatsApp alert, off-peak promo labels</li>
+            <li>Court blocks and recurring weekly bookings</li>
+            <li>WhatsApp reminders and check-in codes</li>
+            <li>Campaign pages, contact tags, gallery, beginner page</li>
+            <li>Live tournament brackets</li>
+            <li>Quiet and busy hours report, sponsor views and clicks, media kit</li>
+            <li>60 days of support after launch</li>
+          </ul>
+          <p class="foot">14 weeks. The extras cost about 35% less than buying them one by one.</p>
+        </article>
+      </div>
+      <p class="small muted" style="margin-top:12px">Opening soon? Start with Starter for opening day. If you move to Growth within 3 months, half of what you paid for Starter counts toward it.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="est-h">
+    <div class="wrap">
+      <h2 id="est-h">Build your package</h2>
+      <p class="lead muted">Pick a package, a style and any extras. The total updates as you go. Prices exclude PPN.</p>
+      <div class="estimator">
+        <form class="panel" id="est" onsubmit="return false">
+          <fieldset>
+            <legend>Package</legend>
+            <div class="seg">
+              <label><input type="radio" name="tier" id="t-starter" value="starter"><span>Starter</span></label>
+              <label><input type="radio" name="tier" id="t-growth" value="growth" checked><span>Growth</span></label>
+              <label><input type="radio" name="tier" id="t-pro" value="pro"><span>Pro</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Style</legend>
+            <div class="seg">
+              <label><input type="radio" name="style" id="s-club" value="club" checked><span>Club</span></label>
+              <label><input type="radio" name="style" id="s-feed" value="feed"><span>Feed</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Extras</legend>
+            <div class="checks" id="addons"></div>
+          </fieldset>
+          <fieldset>
+            <legend>After launch</legend>
+            <div class="seg">
+              <label><input type="radio" name="care" id="c-none" value="0"><span>No plan</span></label>
+              <label><input type="radio" name="care" id="c-care" value="3" checked><span>Care, Rp 3 jt/mo</span></label>
+              <label><input type="radio" name="care" id="c-partner" value="8.5"><span>Growth partner, Rp 8.5 jt/mo</span></label>
+            </div>
+          </fieldset>
+        </form>
+        <aside class="total" aria-live="polite">
+          <span class="small" style="color:var(--ivory-3)">One-time build</span>
+          <p class="big" id="tot">Rp 98 jt</p>
+          <dl id="lines"></dl>
+          <dl class="split" id="split"></dl>
+          <p class="small" style="color:var(--ivory-3)" id="monthly"></p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="roi-h">
+    <div class="wrap">
+      <h2 id="roi-h">When it pays for itself</h2>
+      <p class="lead muted">Move the sliders to match your prices. The answer counts only extra court hours, before sponsors, events or merch.</p>
+      <div class="roi">
+        <div class="stack">
+          <div class="field"><label for="r-rate">Average price per court hour</label><input type="range" id="r-rate" min="150000" max="450000" step="10000" value="260000"><output id="o-rate" for="r-rate"></output></div>
+          <div class="field"><label for="r-hours">Extra hours booked per month through the app</label><input type="range" id="r-hours" min="5" max="120" step="5" value="30"><output id="o-hours" for="r-hours"></output></div>
+          <div class="field"><label for="r-tier">Package</label>
+            <div class="seg" id="r-tier">
+              <label><input type="radio" name="rt" id="rt-s" value="48"><span>Starter</span></label>
+              <label><input type="radio" name="rt" id="rt-g" value="98" checked><span>Growth</span></label>
+              <label><input type="radio" name="rt" id="rt-p" value="165"><span>Pro</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="answer" aria-live="polite">
+          <span class="small">Pays for itself in</span>
+          <b id="o-months">13 months</b>
+          <p class="small" id="o-explain" style="margin-top:8px"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="run-h">
+    <div class="wrap">
+      <h2 id="run-h">After launch</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Plan</th><th>What's included</th><th class="num">Per month</th></tr></thead>
+          <tbody>
+            <tr><td><b>Care</b></td><td>Hosting, backups, uptime monitoring, security updates, bug fixes, up to 4 hours of small changes</td><td class="num">Rp 3 jt</td></tr>
+            <tr><td><b>Growth partner</b></td><td>Care, plus 20 hours a month for new campaign pages, content help and a monthly performance summary</td><td class="num">Rp 8.5 jt</td></tr>
+            <tr><td><b>Running costs</b></td><td>Hosting, database, email, domain and WhatsApp messages, billed at cost with receipts</td><td class="num">About Rp 1.4 jt</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin-top:10px">Plans run for a minimum of 6 months. Extra hours are Rp 450,000 each. WhatsApp runs on the official WhatsApp Business API so your number stays safe.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="terms-h">
+    <div class="wrap">
+      <h2 id="terms-h">How we work</h2>
+      <div class="terms">
+        <div><h3>Payment</h3><ul><li>40% on signing</li><li>30% at the staging demo, with every screen working on your real content</li><li>30% at launch</li><li>Pro: 30 / 30 / 30, and the last 10% 30 days after launch</li></ul></div>
+        <div><h3>You own it</h3><ul><li>The code, domain and accounts are in your name</li><li>Player data stays in your database and can be exported any time</li><li>No commission on bookings, ever</li></ul></div>
+        <div><h3>Changes</h3><ul><li>One round of revisions at each milestone</li><li>Anything outside the package is quoted before we start it</li></ul></div>
+        <div><h3>What we need from you</h3><ul><li>Photos, coach bios, final prices and opening hours</li><li>Your WhatsApp Business number</li><li>Language: English, Indonesian or both</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="next-h">
+    <div class="wrap">
+      <h2 id="next-h">Next steps</h2>
+      <ol class="steps">
+        <li>Try both styles on your phone and pick one.</li>
+        <li>Choose a package and an AYO option. We can settle both in a 30-minute call.</li>
+        <li>Sign and pay the 40% deposit. We start the same week.</li>
+        <li>See your real content on the staging demo, then launch.</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="close">
+  <div class="wrap">
+    <img src="assets/brand/zuma-logo-white.png" alt="Zuma" style="height:26px;width:auto">
+    <h2>More than a game. More than an app.</h2>
+    <p class="muted" style="max-width:60ch">All prices are in rupiah, exclude PPN and are valid for 30 days from 30 October 2026. Third-party fees are billed at cost. Market figures come from AYO, local press and published venue prices as of October 2026.</p>
+    <div class="copyline"><span class="small">Mockup:</span><code id="mock">https://distravantari.github.io/zuma/</code><button class="btn gold" type="button" id="copy">Copy link</button></div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const TIERS = { starter: 48, growth: 98, pro: 165 };
+  const NAMES = { starter: "Starter", growth: "Growth", pro: "Pro" };
+  // Extras; "pro" marks the ones already inside the Pro bundle.
+  const ADDONS = [
+    { id: "slots", name: "Live open-slots board", p: 4, pro: true },
+    { id: "offpeak", name: "Off-peak promo labels", p: 4, pro: true },
+    { id: "beginner", name: "Beginner page", p: 4, pro: true },
+    { id: "kit", name: "Media kit page", p: 4, pro: true },
+    { id: "gallery", name: "Gallery and after-movie", p: 5, pro: true },
+    { id: "campaign", name: "Campaign pages with countdown", p: 8, pro: true },
+    { id: "tags", name: "Contact tags for targeted messages", p: 8, pro: true },
+    { id: "sponsor", name: "Sponsor views and clicks report", p: 8, pro: true },
+    { id: "report", name: "Quiet and busy hours report", p: 8, pro: true },
+    { id: "waitlist", name: "Waitlist with WhatsApp alert", p: 11.5, pro: true },
+    { id: "remind", name: "WhatsApp reminders and check-in codes", p: 11.5, pro: true },
+    { id: "blocks", name: "Court blocks and recurring bookings", p: 12.5, pro: true },
+    { id: "live", name: "Live tournament brackets", p: 16, pro: true },
+    { id: "lang", name: "Indonesian and English", p: 9 },
+    { id: "ayo", name: "AYO sync, if AYO gives API access", p: 15, from: true },
+  ];
+  const fmt = (jt) => "Rp " + (Number.isInteger(jt) ? jt : jt.toFixed(1)) + " jt";
+  const $ = (s) => document.querySelector(s);
+  const box = $("#addons");
+  box.innerHTML = ADDONS.map((a) => `<label id="l-${a.id}"><input type="checkbox" id="a-${a.id}" value="${a.id}"><span>${a.name}</span><span class="p">${a.from ? "from " : ""}${fmt(a.p)}</span></label>`).join("");
+
+  function update() {
+    const tier = document.querySelector("input[name=tier]:checked").value;
+    const style = document.querySelector("input[name=style]:checked").value;
+    const care = Number(document.querySelector("input[name=care]:checked").value);
+    let total = TIERS[tier];
+    const lines = [[NAMES[tier] + " package", fmt(TIERS[tier])]];
+    if (style === "feed") { total += 10; lines.push(["Feed story and card manager", fmt(10)]); }
+    let hasFrom = false;
+    ADDONS.forEach((a) => {
+      const input = $("#a-" + a.id), label = $("#l-" + a.id);
+      const inPro = tier === "pro" && a.pro;
+      input.disabled = inPro;
+      label.classList.toggle("included", inPro);
+      label.querySelector(".p").textContent = inPro ? "In Pro" : (a.from ? "from " : "") + fmt(a.p);
+      if (input.checked && !inPro) { total += a.p; lines.push([a.name, (a.from ? "from " : "") + fmt(a.p)]); if (a.from) hasFrom = true; }
+    });
+    $("#tot").textContent = (hasFrom ? "From " : "") + fmt(total);
+    $("#lines").innerHTML = lines.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+    const [d, m, l] = tier === "pro" ? [0.3, 0.3, 0.4] : [0.4, 0.3, 0.3];
+    $("#split").innerHTML = `<dt>On signing</dt><dd>${fmt(Math.round(total * d * 10) / 10)}</dd><dt>At staging demo</dt><dd>${fmt(Math.round(total * m * 10) / 10)}</dd><dt>At launch${tier === "pro" ? " and 30 days after" : ""}</dt><dd>${fmt(Math.round(total * l * 10) / 10)}</dd>`;
+    $("#monthly").textContent = care ? `Plus ${fmt(care)} a month for the ${care === 3 ? "Care" : "Growth partner"} plan, and about Rp 1.4 jt a month in running costs.` : "Plus about Rp 1.4 jt a month in running costs.";
+  }
+  $("#est").addEventListener("change", update);
+  update();
+
+  function roi() {
+    const rate = Number($("#r-rate").value), hours = Number($("#r-hours").value);
+    const price = Number(document.querySelector("input[name=rt]:checked").value) * 1e6;
+    const perMonth = rate * hours;
+    const months = Math.ceil(price / perMonth);
+    $("#o-rate").textContent = "Rp " + rate.toLocaleString("en-US");
+    $("#o-hours").textContent = hours + " hours (" + (hours / 2040 * 100).toFixed(1) + "% of your 2,040)";
+    $("#o-months").textContent = months + (months === 1 ? " month" : " months");
+    $("#o-explain").textContent = `${hours} extra hours at Rp ${rate.toLocaleString("en-US")} bring in Rp ${(perMonth / 1e6).toFixed(1)} jt a month.`;
+  }
+  ["#r-rate", "#r-hours"].forEach((s) => $(s).addEventListener("input", roi));
+  $("#r-tier").addEventListener("change", roi);
+  roi();
+
+  $("#copy").addEventListener("click", () => {
+    const t = $("#mock").textContent, btn = $("#copy");
+    const done = () => { btn.textContent = "Copied"; setTimeout(() => (btn.textContent = "Copy link"), 1600); };
+    try {
+      navigator.clipboard.writeText(t).then(done, () => { getSelection().selectAllChildren($("#mock")); btn.textContent = "Selected, press copy"; });
+    } catch { getSelection().selectAllChildren($("#mock")); }
+  });
+})();
+</script>
+</body>
+</html>

@@ -186,6 +186,7 @@
         <div class="switch">
           <button type="button" data-action="toggle-addons" aria-pressed="${!hidden}">Show add-on tags</button>
         </div>
+        <div class="switch"><a href="proposal.html">Read the proposal</a></div>
         <p class="foot">Codes match the client brief (HM, BK, EV, PG, PM, SP, MK, AD). AC = Academy, MERCH = Merchandise. Items tagged Add-on are optional extras.</p>
       </aside>`;
   }

@@ -693,16 +693,19 @@ body, h1, h2, h3, h4, b, .price { font-variant-numeric: lining-nums; }
 @media (max-width: 899px) { .admin-nav > a:first-child { margin-bottom: 0 !important; margin-right: 8px; } .admin-nav .ask-nav { margin-top: 0; white-space: nowrap; } }
 
 /* ---------- Home sliding banner (HM-01) ---------- */
-.hero { padding: 14px 0 4px; }
+.hero { background: var(--forest); padding: 4px 0 6px; }
+.hero + .board { margin-top: -1px; }
 .hero-rail { position: relative; display: flex; gap: 12px; padding: 0 var(--gutter); scroll-padding-inline: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .hero-rail::-webkit-scrollbar { display: none; }
 .hero-slide {
   flex: 0 0 calc(100% - 2 * var(--gutter)); scroll-snap-align: start;
   display: grid; grid-template-columns: 1fr 34%; align-items: center; gap: 8px;
-  min-height: 178px; padding: 16px; border: var(--line); border-radius: var(--r-card);
+  min-height: 178px; padding: 16px; border: 2px solid var(--forest-3); border-radius: var(--r-card);
   text-decoration: none; color: var(--charcoal);
 }
 .hero-slide.forest, .hero-slide.char { color: var(--ivory); }
+.hero-slide.forest { background-color: var(--forest-2); }
+.hero-slide.gold { border-color: var(--gold); }
 .hero-slide.char { background-color: var(--charcoal); background-image: radial-gradient(circle, var(--charcoal-2) 0 1.4px, transparent 1.6px); }
 .hero-slide .copy { position: relative; z-index: 1; display: grid; gap: 6px; justify-items: start; }
 .hero-slide h2 { font-size: var(--t-2xl); line-height: 1; }
@@ -718,6 +721,6 @@ body, h1, h2, h3, h4, b, .price { font-variant-numeric: lining-nums; }
 .hero-slide.gold .art svg circle { fill: var(--forest); }
 .hero-slide .ad-tag { font-size: var(--t-xs); font-weight: 700; padding: 1px 6px; border-radius: 4px; background: var(--ivory); color: var(--charcoal); }
 .hero-dots { display: flex; justify-content: center; gap: 6px; padding: 10px 0 0; }
-.hero-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: var(--r-pill); background: var(--ivory-3); cursor: pointer; transition: width .2s; }
-.hero-dots button[aria-current] { width: 22px; background: var(--forest); }
+.hero-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: var(--r-pill); background: var(--forest-3); cursor: pointer; transition: width .2s; }
+.hero-dots button[aria-current] { width: 22px; background: var(--gold); }
 @media (prefers-reduced-motion: reduce) { .hero-dots button { transition: none; } }

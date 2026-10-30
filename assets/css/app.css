@@ -399,7 +399,7 @@ input:focus-visible + .seg-pill { outline: 3px solid var(--gold); outline-offset
 .level-strip { display: grid; grid-template-columns: repeat(3, 1fr); border: var(--line); border-radius: var(--r-card); overflow: hidden; }
 .level-strip div { padding: 12px 10px; font-size: var(--t-xs); min-width: 0; }
 .level-strip div + div { border-left: var(--line); }
-.level-strip b { display: block; font-family: var(--serif); font-weight: 400; font-size: var(--t-md); overflow-wrap: anywhere; margin-bottom: 2px; }
+.level-strip b { display: block; font-family: var(--serif); font-weight: 400; font-size: var(--t-sm); margin-bottom: 2px; }
 .level-strip .on { background: var(--forest); color: var(--ivory); }
 .coach { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; }
 .table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }

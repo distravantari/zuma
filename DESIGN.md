@@ -10,7 +10,7 @@ The club's real product is court time that expires if nobody books it. So the ho
 
 The client picks one. Both cover the same brief features and share the same admin panel.
 
-- **Club**: calm and editorial. A home screen led by the court board, with everything one tap away. Four tabs: Home, Book, Events, More.
+- **Club**: calm and editorial. Home opens with a sliding banner (events, promos, academy, and one sponsor slide marked Ad, like the banner on GoFood's home), then the court board, with everything one tap away. Four tabs: Home, Book, Events, More. The slides come from Content, Banners in the admin. They advance every 4.5 seconds, pause while touched, and stay still for people who turn off motion.
 - **Feed**: built on the habits Zuma's players already have from Instagram and TikTok. Stories across the top, a full-screen swipeable feed of cards (open courts, events, coaches, merch, promos, live scores), a heart to save and a WhatsApp share on every card. Five tabs with a raised Book button in the middle, and a Me tab that acts as a profile without an account. The feed is dark and immersive like Reels; inner pages stay light like Instagram.
 
 Switch styles in the desktop side panel, from More or Me, or with `#/?style=feed` / `#/?style=club`.

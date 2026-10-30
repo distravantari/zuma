@@ -145,7 +145,7 @@
 
   /* ---------- Presenter notes (desktop side panel) ---------- */
   const NOTES = {
-    home: ["Home", [["HM-01", "Promo and event banners"], ["HM-02", "Booking shortcut"], ["Add-on", "Live court board with today's open slots"], ["HM-03", "Upcoming events and open programs"], ["HM-04", "Club info, hours, WhatsApp"], ["HM-05", "Sponsor and partner logos"]]],
+    home: ["Home", [["HM-01", "Sliding promo and event banner, sponsor slide marked Ad"], ["HM-02", "Booking shortcut"], ["Add-on", "Live court board with today's open slots"], ["HM-03", "Upcoming events and open programs"], ["HM-04", "Club info, hours, WhatsApp"], ["HM-05", "Sponsor and partner logos"]]],
     book: ["Court booking", [["BK-01", "Date, duration, court and time with live availability"], ["BK-02", "Peak and off-peak prices shown as info"], ["Add-on", "Off-peak promo marks on the grid"], ["Add-on", "Court blocks for academy and maintenance"], ["Add-on", "Waitlist when a slot is taken"], ["BK-03", "Short form, no account needed"], ["PM-02", "Promo code recorded for the front desk"], ["MK-01", "Contact consent"]]],
     confirm: ["Booking confirmed", [["BK-04", "Booking code on screen, sent by WhatsApp or email"], ["Add-on", "Check-in code and WhatsApp reminder"], ["BK-06", "Rules and cancellation policy"]]],
     manage: ["Manage a booking", [["BK-05", "Check, change or cancel with the booking code"], ["BK-06", "Cancellation policy enforced"]]],
@@ -220,6 +220,51 @@
   const addon = '<span class="addon">Add-on</span>';
 
   /* ---------- Views: home ---------- */
+  // Sliding banner at the top of Home (HM-01). Slides come from Content, Banners in the admin.
+  function heroBanner() {
+    const art = { event: courtSvg(true), promo: courtSvg(false), academy: productArt({ slug: "balls" }), sponsor: productArt({ slug: "wristband-set" }) };
+    const tone = { event: "forest", promo: "gold", academy: "char", sponsor: "forest" };
+    const n = Z.banners.length;
+    return `<section class="hero" aria-roledescription="carousel" aria-label="Promos and events">
+      <div class="hero-rail">${Z.banners.map((b, i) => {
+        const [first, ...rest] = b.title.split(" ");
+        return `<a class="hero-slide halftone ${tone[b.kind] || ""}" href="${b.href}" aria-label="${esc(b.title)}, ${i + 1} of ${n}">
+          <div class="copy">
+            ${b.ad ? `<span class="ad-tag">Ad</span>` : ""}
+            <h2><span class="script">${esc(first)}</span> ${esc(rest.join(" "))}</h2>
+            <p>${esc(b.text)}</p>
+            <span class="go">${esc(b.cta)}</span>
+          </div>
+          <div class="art" aria-hidden="true">${art[b.kind] || ""}</div>
+        </a>`;
+      }).join("")}</div>
+      <div class="hero-dots" role="group" aria-label="Choose a slide">${Z.banners.map((b, i) => `<button type="button" data-action="hero-dot" data-i="${i}" aria-label="Slide ${i + 1}" ${i === 0 ? 'aria-current="true"' : ""}></button>`).join("")}</div>
+    </section>`;
+  }
+
+  // Slides advance every 4.5s, pause while touched, and stay put with reduced motion.
+  let heroTimer;
+  function mountHero() {
+    clearInterval(heroTimer);
+    const rail = document.querySelector(".hero-rail");
+    if (!rail) return;
+    const dots = [...document.querySelectorAll(".hero-dots button")];
+    const slides = [...rail.children];
+    const left = (el) => el.offsetLeft - slides[0].offsetLeft;
+    const at = () => slides.reduce((best, el, i) => Math.abs(left(el) - rail.scrollLeft) < Math.abs(left(slides[best]) - rail.scrollLeft) ? i : best, 0);
+    const go = (i) => rail.scrollTo({ left: left(slides[i]), behavior: "smooth" });
+    rail.addEventListener("scroll", () => dots.forEach((d, i) => d.toggleAttribute("aria-current", i === at())), { passive: true });
+    let held = 0;
+    ["pointerdown", "touchstart", "focusin"].forEach((e) => rail.addEventListener(e, () => { held = Date.now(); }, { passive: true }));
+    mountHero.go = go;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    heroTimer = setInterval(() => {
+      if (!document.body.contains(rail)) return clearInterval(heroTimer);
+      if (Date.now() - held < 8000 || document.hidden) return;
+      go((at() + 1) % dots.length);
+    }, 4500);
+  }
+
   function viewHome() {
     const today = iso(now());
     const h = now().getHours();
@@ -238,21 +283,12 @@
     const upcoming = Z.events.slice().sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3);
     return `
       ${topbar()}
+      ${heroBanner()}
       <section class="board" aria-labelledby="board-h">
         <h1 id="board-h">${openCount ? `${openCount} open hours left today` : "Fully booked today"}</h1>
         <p class="sub">Next free time on each court. Tap a court to book it. ${addon}</p>
         <div class="board-grid">${tiles}</div>
         <a class="btn gold block" href="#/book">Book a court</a>
-      </section>
-
-      <section class="section" style="padding-left:0;padding-right:0">
-        <div class="banner-rail" aria-label="Promos and events">
-          ${Z.banners.map((b, i) => `
-            <a class="banner" href="${b.href}">
-              <div class="art halftone ${i === 0 ? "forest" : i === 1 ? "gold" : ""}"><strong>${esc(b.title)}</strong></div>
-              <div class="body"><p class="small">${esc(b.text)}</p><span>${esc(b.cta)}</span></div>
-            </a>`).join("")}
-        </div>
       </section>
 
       <section class="section">
@@ -1549,6 +1585,7 @@
     render.sameView = false;
 
     clearInterval(cdTimer);
+    mountHero();
     if (key === "event") {
       const e = Z.events.find((x) => x.slug === b);
       cdTimer = setInterval(() => {
@@ -1644,6 +1681,7 @@
     if (act === "ask-close") return assistant.close();
     if (act === "ask-expand") return assistant.close();
     if (act === "ask-link") return;
+    if (act === "hero-dot") { mountHero.go && mountHero.go(Number(t.dataset.i)); return; }
     if (act === "style") { store.set("style", t.dataset.style); closeStory(); location.hash === "#/" ? render() : (location.hash = "#/"); return; }
     if (act === "story") return showStory(t.dataset.id, 0);
     if (act === "story-next" || act === "story-prev") { const v = document.querySelector(".story-view"); return showStory(v.dataset.id, Number(v.dataset.idx) + (act === "story-next" ? 1 : -1)); }

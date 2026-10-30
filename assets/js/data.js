@@ -89,6 +89,15 @@ window.ZUMA = {
       cta: "Try a class",
       href: "#/beginners",
     },
+    {
+      id: "b4",
+      kind: "sponsor",
+      ad: true,
+      title: "Northline Water",
+      text: "Official water of Smash The Year. A cold bottle with every evening booking this week.",
+      cta: "See the tournament",
+      href: "#/events/smash-the-year",
+    },
   ],
 
   sponsors: [
